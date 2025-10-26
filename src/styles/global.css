@@ -1,0 +1,92 @@
+:root {
+    --primary-color: #39BDF9;
+    --secondary-color: #F4F4F6;
+    --text-color: #333333;
+    --border-radius: 8px;
+    --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.nav-container {
+    padding:1rem;
+    background-color: var(--primary-color) !important;
+}
+
+.navbar-nav a{
+    color:var(--primary-color);
+    font-weight: bold;
+    padding:0.5rem 1rem;
+}
+
+.navbar-nav a:hover{
+   color:var(--primary-color);
+}
+
+.navbar-toggler {
+  border-color: #fff !important;
+}
+.navbar-toggler:hover,
+.navbar-toggler:focus {
+  border-color: #fff !important;
+  background-color: transparent !important; 
+}
+
+.navbar-toggler-icon {
+  filter: invert(100%) brightness(200%);
+}
+
+@media (max-width:992px) {
+    .navbar-nav a {
+        margin-bottom:0.5rem;
+    }
+}
+
+
+/* Start login page styles */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    background-color: #F4F4F6;
+}
+
+.login-form {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 450px;  /* This should be 1000px, not 400px */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.login-btn{
+    background-color: var(--primary-color);
+    color: #fff;
+    font-weight: bold;
+    border:1px solid var(--primary-color);
+    outline: none;
+}
+
+.form-group input:focus {
+    border:1px solid var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 1px rgba(57, 189, 249, 0.5);
+}
+
+.register-here{
+    color: var(--primary-color);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+@media (max-width:992px) {
+   .login-form {
+        max-width: 350px;
+    }
+}
+
+/* End login page styles */
+
+
+
+

@@ -4,7 +4,8 @@ import './index.css'
 import App from './App.tsx'
 import { Provider } from 'react-redux'
 import { store } from './app/store.ts'
-
+import 'bootstrap/dist/css/bootstrap.min.css';
+import  './styles/global.css';
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
