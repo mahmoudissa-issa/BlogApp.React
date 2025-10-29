@@ -1,30 +1,36 @@
 // src/components/NavBar.jsx
 import React from "react";
 import { Navbar, Nav, Container, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { logout } from "../features/auth/authSlice";
 import logo from "../assets/m-logo-design.svg";
 export default function NavBar() {
   const { user } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
-
+  const navigate = useNavigate();
+   const handleLogout = () => {
+    dispatch(logout()); 
+  };
   return (
     <Navbar
       bg="info"
       variant="light"
-      expand="lg"             // <-- correct expand prop
+      expand="lg" // <-- correct expand prop
       fixed="top"
       className="shadow-sm nav-container"
     >
-      <Container>
-        <Navbar.Brand as={Link} to="/" className="text-white fw-bold text-uppercase d-flex align-items-center">
+      <Container fluid>
+        <Navbar.Brand
+          as={Link}
+          to="/"
+          className="text-white fw-bold text-uppercase d-flex align-items-center"
+        >
           <img
             src={logo}
             alt="logo"
             width="48"
             height="48"
-            
             className="d-inline-block align-top me-2 "
           />
           Mimo Blog App
@@ -40,7 +46,7 @@ export default function NavBar() {
                 <Link to="/login" className="btn btn-light btn-sm me-2">
                   Sign In
                 </Link>
-                 <Link to="/Register" className="btn btn-light btn-sm me-2">
+                <Link to="/Register" className="btn btn-light btn-sm me-2">
                   Register
                 </Link>
               </>
@@ -49,20 +55,20 @@ export default function NavBar() {
             {user && (
               <>
                 {user.role === "Admin" && (
-                  <Nav.Link as={Link} to="/admin" className="text-white me-2">
+                  <Link to="/admin" className="btn btn-light btn-sm me-2">
                     Admin
-                  </Nav.Link>
+                  </Link>
                 )}
-                <Nav.Link as={Link} to="/profile" className="text-white me-2">
+                <Link to="/profile" className="btn btn-light btn-sm me-2">
                   Settings
-                </Nav.Link>
-                <Button
-                  variant="outline-light"
-                  size="sm"
-                  onClick={() => dispatch(logout())}
+                </Link>
+                <Link
+                  to="/"
+                  className="btn btn-light btn-sm me-2"
+                  onClick={handleLogout}
                 >
                   Logout
-                </Button>
+                </Link>
               </>
             )}
           </Nav>

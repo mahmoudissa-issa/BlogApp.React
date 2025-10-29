@@ -2,7 +2,7 @@ import axios, { AxiosError } from "axios";
 import type { APIResponse } from "../types/api";
 
 export const axiosInstance = axios.create({
-baseURL:import.meta.env.API_BASE_URL as string,
+  baseURL: import.meta.env.VITE_API_BASE_URL as string,
 });
 
 axiosInstance.interceptors.request.use((config)=>{

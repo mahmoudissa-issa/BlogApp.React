@@ -10,12 +10,12 @@ export interface ChangePasswordDto {currentPassword:string;newPassword:string;co
 export const authAPI ={
     login:async (dto:LoginDto):Promise<AuthResponse> =>
     {
-        var res=await axiosInstance.post("/api/auth/login", dto);
+        var res=await axiosInstance.post("/api/login", dto);
        return res.data.result;
     },
     register:async (dto:RegisterDto):Promise<AuthResponse> =>
     {
-        var res=await axiosInstance.post("/api/auth/register", dto);
+        var res=await axiosInstance.post("/api/register", dto);
         return res.data.result;
     }
 }

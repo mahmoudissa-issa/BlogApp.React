@@ -9,8 +9,10 @@ import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminLayout from "./layouts/AdminLayout.";
 import NotFound from "./pages/NotFound";
+import { useEffect } from "react";
 
 export default function App() {
+
   return (
     <BrowserRouter>
       <Routes>

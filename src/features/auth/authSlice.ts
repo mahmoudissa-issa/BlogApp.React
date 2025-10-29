@@ -1,7 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { AuthResponse, AuthUser } from "../../types/auth";
 import { authAPI, type LoginDto, type RegisterDto } from "../../api/authApi";
+import { Nav } from "react-bootstrap";
+import { Navigate } from "react-router-dom";
 
+import { toast } from "react-toastify";
 
 interface AuthState {
     user:AuthUser |null;
@@ -28,15 +31,17 @@ export const login=createAsyncThunk('auth/login',async (dto:LoginDto, thunkAPI)=
         return await authAPI.login(dto);
 
     }catch(err:any){
+        toast.error(err.result || "Login failed");
         return thunkAPI.rejectWithValue(err.message || 'Login failed');
     }
 });
 
-export const register=createAsyncThunk('auth/register',async (dto:RegisterDto, thunkAPI)=>{
+export const registers=createAsyncThunk('auth/register',async (dto:RegisterDto, thunkAPI)=>{
     try{
         return await authAPI.register(dto);
 
     }catch(err:any){
+          toast.error(err.result || "Registration failed");
         return thunkAPI.rejectWithValue(err.message || 'Registration failed');
     }
 });
@@ -49,6 +54,7 @@ export const register=createAsyncThunk('auth/register',async (dto:RegisterDto, t
             state.user=null;
             state.token=null;
             localStorage.removeItem('token');
+          
         }
     },
     extraReducers:(builder)=>{
@@ -67,17 +73,18 @@ export const register=createAsyncThunk('auth/register',async (dto:RegisterDto, t
             state.error=action.payload as string;
         }),
 
-        builder.addCase(register.pending,(state)=>{     
+        builder.addCase(registers.pending,(state)=>{     
             state.status='loading';
             state.error=undefined;
         }),
-        builder.addCase(register.fulfilled,(state, action)=>{
+        builder.addCase(registers.fulfilled,(state, action)=>{
             state.status='idle';    
             state.user=mapToUser(action.payload);
             state.token=action.payload.token;
             localStorage.setItem('token', action.payload.token);
+            
         }   ),
-        builder.addCase(register.rejected,(state, action)=>{
+        builder.addCase(registers.rejected,(state, action)=>{
             state.status='error';
             state.error=action.payload as string;
         })
