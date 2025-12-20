@@ -4,7 +4,7 @@ import { FaFacebook, FaTwitter, FaGithub } from "react-icons/fa";
 function Footer() {
   return (
    <Container fluid
-  className=" position-fixed bottom-0 w-100 text-white fw-bold"
+  className="  w-100 text-white fw-bold"
   style={{ padding: "2rem", backgroundColor: "#39BDF9" }}
 >
   <div className="footer-content d-flex justify-content-between align-items-center flex-wrap text-center gap-3">

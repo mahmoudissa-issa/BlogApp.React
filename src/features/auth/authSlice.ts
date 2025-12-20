@@ -1,8 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { AuthResponse, AuthUser } from "../../types/auth";
 import { authAPI, type LoginDto, type RegisterDto } from "../../api/authApi";
-import { Nav } from "react-bootstrap";
-import { Navigate } from "react-router-dom";
+
 
 import { toast } from "react-toastify";
 
@@ -30,6 +29,7 @@ export const login=createAsyncThunk('auth/login',async (dto:LoginDto, thunkAPI)=
     try{
         return await authAPI.login(dto);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }catch(err:any){
         toast.error(err.result || "Login failed");
         return thunkAPI.rejectWithValue(err.message || 'Login failed');
@@ -40,6 +40,7 @@ export const registers=createAsyncThunk('auth/register',async (dto:RegisterDto, 
     try{
         return await authAPI.register(dto);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }catch(err:any){
           toast.error(err.result || "Registration failed");
         return thunkAPI.rejectWithValue(err.message || 'Registration failed');
@@ -58,6 +59,7 @@ export const registers=createAsyncThunk('auth/register',async (dto:RegisterDto, 
         }
     },
     extraReducers:(builder)=>{
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         builder.addCase(login.pending,(state)=>{
             state.status='loading';
             state.error=undefined;

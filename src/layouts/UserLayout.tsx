@@ -4,9 +4,11 @@ import Footer from "../pages/Footer";
 
 export default function UserLayout() {
     return (
-        <div>
+        <div className="d-flex flex-column " style={{minHeight:"100vh"}}>
             <NavBar/>
+            <main className="flex-grow-1" style={{backgroundColor: "#F4F4F6"}}>
             <Outlet/>
+            </main>
             <Footer/>
         </div>
     );

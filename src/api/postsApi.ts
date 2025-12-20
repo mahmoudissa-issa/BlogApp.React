@@ -1,14 +1,15 @@
+import { API_ENDPOINTS } from "../constants/apiEndpoints";
 import { axiosInstance } from "../services/axiosInstance";
 import type { CreatePostRequest, Post, UpdatePostRequest } from "../types/post";
 
 
 export const postApi={
   async getAll():Promise<Post[]>{
-    const res= await axiosInstance.get("/api/posts");
+    const res= await axiosInstance.get(API_ENDPOINTS.POSTS.GET_ALL);
     return res.data.result;
   },
   async getById(id:number):Promise<Post>{
-    const res= await axiosInstance.get(`/api/posts/${id}`);
+    const res= await axiosInstance.get(API_ENDPOINTS.POSTS.GET_BY_ID(id));
     return res.data.result;
   },
 
@@ -20,7 +21,7 @@ export const postApi={
     formData.append("categoryId", post.categoryId.toString());
     post.tagIds.forEach(tagId=> formData.append("tagIds", tagId.toString()));
     if(post.postImage) formData.append("postImage", post.postImage);
-    const res= await axiosInstance.post("/api/posts", formData,{headers:{"Content-Type":"multipart/form-data"}});
+    const res= await axiosInstance.post(API_ENDPOINTS.POSTS.CREATE, formData,{headers:{"Content-Type":"multipart/form-data"}});
     return res.data.result;
   },
 

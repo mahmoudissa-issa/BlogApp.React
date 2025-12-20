@@ -12,6 +12,7 @@ export const fetchPosts=createAsyncThunk("posts/fetchAll",async(_, thunkAPI)=>{
     try{
         const posts=await postApi.getAll();
         return posts;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }catch(err:any){
         return thunkAPI.rejectWithValue(err.message || 'Failed to fetch posts');
     }
@@ -21,6 +22,7 @@ export const fetchPostById=createAsyncThunk("posts/fetchById",async(id:number,th
     try{
         return await postApi.getById(id);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }catch(err:any){
         return thunkAPI.rejectWithValue(err.message || 'Failed to fetch post');
     }
@@ -30,6 +32,7 @@ export const createPost=createAsyncThunk("posts/create",async(post:CreatePostReq
         try{
 
             return await postApi.create(post);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         }catch(err:any){
             return thunkAPI.rejectWithValue(err.message || 'Failed to create post');
         }
@@ -38,6 +41,7 @@ export const createPost=createAsyncThunk("posts/create",async(post:CreatePostReq
 export const updatePost=createAsyncThunk("posts/update",async(post:UpdatePostRequest,thunkAPI) =>{
     try{        
         return await postApi.update(post);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }catch(err:any){
         return thunkAPI.rejectWithValue(err.message || 'Failed to update post');
     }       
@@ -50,6 +54,7 @@ export const deletePost = createAsyncThunk<number, number, { rejectValue: string
         try {
             await postApi.delete(id);
             return id;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
             return thunkAPI.rejectWithValue(err.message || 'Failed to delete post');
         }

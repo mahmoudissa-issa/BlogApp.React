@@ -6,6 +6,7 @@ import { Provider } from "react-redux";
 import { store } from "./app/store.ts";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/global.css";
+import "./styles/emptyState.css"
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, Bounce } from "react-toastify";
 

@@ -1,7 +1,8 @@
-import type { Register } from "react-router-dom";
+
+import { API_ENDPOINTS } from "../constants/apiEndpoints";
 import { axiosInstance } from "../services/axiosInstance";
 import type { AuthResponse } from "../types/auth";
-import type { APIResponse } from "../types/api";
+
 
 export interface LoginDto {email:string;password:string;}
 export interface RegisterDto  {userName:string;email:string;password:string;confirmPassword:string;fullName?:string;}
@@ -10,12 +11,12 @@ export interface ChangePasswordDto {currentPassword:string;newPassword:string;co
 export const authAPI ={
     login:async (dto:LoginDto):Promise<AuthResponse> =>
     {
-        var res=await axiosInstance.post("/api/login", dto);
+        const res=await axiosInstance.post(API_ENDPOINTS.AUTH.LOGIN, dto);
        return res.data.result;
     },
     register:async (dto:RegisterDto):Promise<AuthResponse> =>
     {
-        var res=await axiosInstance.post("/api/register", dto);
+        const res=await axiosInstance.post(API_ENDPOINTS.AUTH.REGISTER, dto);
         return res.data.result;
     }
 }

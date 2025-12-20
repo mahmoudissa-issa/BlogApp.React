@@ -1,14 +1,14 @@
 // src/components/NavBar.jsx
 import React from "react";
-import { Navbar, Nav, Container, Button } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { Navbar, Nav, Container } from "react-bootstrap";
+import { Link} from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { logout } from "../features/auth/authSlice";
 import logo from "../assets/m-logo-design.svg";
 export default function NavBar() {
   const { user } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+
    const handleLogout = () => {
     dispatch(logout()); 
   };
@@ -33,7 +33,7 @@ export default function NavBar() {
             height="48"
             className="d-inline-block align-top me-2 "
           />
-          Mimo Blog App
+          MIMO Blog App
         </Navbar.Brand>
 
         {/* Toggle must reference the same id as Collapse's aria-controls */}
