@@ -2,7 +2,7 @@
 import {Navigate} from "react-router-dom";
 import { useAppSelector } from "../app/hooks";
 import type { Role } from "../types/auth";
-import { use, type JSX } from "react";
+import { type JSX } from "react";
 
 
 export default function ProtectedRoute({children,roles}:{children:JSX.Element;roles?:Role[]}) {
