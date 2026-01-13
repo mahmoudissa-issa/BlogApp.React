@@ -8,7 +8,9 @@ import PostCardSkeleton from "../components/skeletons/PostCardSkeleton";
 import EmptyState from "../components/common/EmptyState";
 import ErrorAlert from "../components/common/ErrorAlert";
 import TagsSkeleton from "../components/skeletons/TagsSkeleton";
-
+import { formatPostDate } from "../utils/dateFormatter";
+import defaultAvatar from "../assets/avatar.png";
+import DomPurify from "dompurify";
 function Home() {
   const dispatch = useAppDispatch();
   const {
@@ -34,6 +36,13 @@ function Home() {
     activeTag === "All"
       ? posts
       : posts.filter((post) => post.tagNames.some((tag) => tag === activeTag));
+// I need to sanitize the post content before rendering 
+  const sanitizedPosts = filteredPosts.map((post) => ({
+    ...post,
+    content: DomPurify.sanitize(post.content),
+  }));
+    
+ 
 
   return (
     <div className="posts-container">
@@ -58,7 +67,7 @@ function Home() {
         <div className="tags-container">
           {tagsLoading ? (
             // Skeleton loading for tags
-              <TagsSkeleton count={8} />
+            <TagsSkeleton count={8} />
           ) : (
             <>
               {/* "All" button */}
@@ -68,12 +77,14 @@ function Home() {
               >
                 All
               </button>
-              
+
               {/* Tag buttons */}
               {tags.map((tag) => (
                 <button
                   key={tag.tagId}
-                  className={`tag-pill ${activeTag === tag.name ? "active" : ""}`}
+                  className={`tag-pill ${
+                    activeTag === tag.name ? "active" : ""
+                  }`}
                   onClick={() => setActiveTag(tag.name)}
                 >
                   {tag.name}
@@ -97,7 +108,7 @@ function Home() {
               <PostCardSkeleton />
               <PostCardSkeleton />
             </>
-          ) : filteredPosts.length === 0 ? (
+          ) : sanitizedPosts.length === 0 ? (
             // Empty state
             <div className="posts-grid-empty">
               <EmptyState
@@ -119,7 +130,7 @@ function Home() {
             </div>
           ) : (
             // Posts list
-            filteredPosts.map((post) => (
+            sanitizedPosts.map((post) => (
               <Link
                 to={`/posts/${post.id}`}
                 key={post.id}
@@ -143,25 +154,23 @@ function Home() {
                   <div className="post-content">
                     {/* Category Badge */}
                     {post.categoryName && (
-                      <span className="post-category">
-                        {post.categoryName}
-                      </span>
+                      <span className="post-category">{post.categoryName}</span>
                     )}
 
                     {/* Post Title */}
                     <h3 className="post-title">{post.title}</h3>
 
                     {/* Post Excerpt */}
-                    <p className="post-excerpt">
-                      {post.content.substring(0, 120)}...
-                    </p>
+                    <p className="post-excerpt" dangerouslySetInnerHTML={{__html:post.content.substring(0,120) +"..."}} />
+                  
+                    
                   </div>
 
                   {/* Author & Date */}
                   <div className="post-meta">
                     <div className="author-info">
                       <img
-                        src="/default-avatar.png"
+                        src={defaultAvatar}
                         alt={post.authorName}
                         className="author-avatar"
                         onError={(e) => {
@@ -171,11 +180,7 @@ function Home() {
                       <div className="author-details">
                         <p className="author-name">{post.authorName}</p>
                         <p className="post-date">
-                          {new Date(post.createdAt).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
+                          {formatPostDate(post.createdAt)}
                         </p>
                       </div>
                     </div>

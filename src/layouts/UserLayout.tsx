@@ -6,7 +6,7 @@ export default function UserLayout() {
     return (
         <div className="d-flex flex-column " style={{minHeight:"100vh"}}>
             <NavBar/>
-            <main className="flex-grow-1" style={{backgroundColor: "#F4F4F6"}}>
+            <main className="flex-grow-1" style={{backgroundColor: "#F4F4F6",marginTop:"60px"}}>
             <Outlet/>
             </main>
             <Footer/>

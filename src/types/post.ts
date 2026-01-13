@@ -6,6 +6,7 @@ export interface Post {
     content:string;
     authorId:number;
     authorName:string;
+    avatarUrl?:string;
     categoryId:number;
     categoryName:string;
     tagIds:number[];
@@ -27,4 +28,20 @@ export interface CreatePostRequest {
 
 export interface UpdatePostRequest extends CreatePostRequest {
     id:number;
+}
+
+
+export interface Comment {
+    id:number;
+    postId:number;
+    userId:number;
+    userName:string;
+    content:string;
+    createdAt:string;
+    avatarUrl?:string;
+}
+
+export interface CreateCommentRequest {
+    postId:number;
+    content:string;
 }

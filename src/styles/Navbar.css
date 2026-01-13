@@ -1,0 +1,151 @@
+/* src/styles/NavBar.css */
+
+/* Navbar Enhanced Styles */
+.navbar-enhanced {
+  background: linear-gradient(135deg, #39bdf9 0%, #667eea 100%);
+  box-shadow: 0 4px 20px rgba(57, 189, 249, 0.3);
+  padding: 1rem 0;
+  z-index: 1000;
+}
+
+/* Brand Styles */
+.navbar-brand-custom {
+  display: flex;
+  align-items: center;
+  color: white !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-decoration: none;
+  letter-spacing: -0.5px;
+  transition: transform 0.3s ease;
+}
+
+.navbar-brand-custom:hover {
+  transform: scale(1.02);
+}
+
+.logo-wrapper {
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.navbar-brand-custom:hover .logo-wrapper {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  transform: rotate(-5deg);
+}
+
+.brand-text {
+  font-size: 1.3rem;
+  color: white;
+}
+
+/* Navbar Toggle */
+.navbar-toggler-custom {
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.navbar-toggler-custom:hover,
+.navbar-toggler-custom:focus {
+  border-color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-toggler-icon {
+  filter: invert(100%) brightness(200%);
+}
+
+/* Navigation Buttons */
+.nav-btn {
+  padding: 0.65rem 1.75rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+/* Solid White Button (Admin, Settings) */
+.nav-btn-solid {
+  background-color: white;
+  color: #667eea;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.nav-btn-solid:hover {
+  background-color: #f7fafc;
+  color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Outline Button (Sign In, Register, Logout) */
+.nav-btn-outline {
+  background-color: transparent;
+  color: white;
+  border: 2px solid white;
+}
+
+.nav-btn-outline:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  border-color: white;
+  transform: translateY(-2px);
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .navbar-enhanced {
+    padding: 0.75rem 0;
+  }
+
+  .logo-wrapper {
+    width: 40px;
+    height: 40px;
+  }
+
+  .logo-wrapper img {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  .brand-text {
+    font-size: 1.1rem;
+  }
+
+  .nav-btn {
+    margin-bottom: 0.5rem;
+    width: 100%;
+  }
+
+  .ms-auto.align-items-center {
+    align-items: flex-start !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .brand-text {
+    font-size: 1rem;
+  }
+
+  .logo-wrapper {
+    width: 36px;
+    height: 36px;
+    margin-right: 0.5rem;
+  }
+
+  .logo-wrapper img {
+    width: 24px !important;
+    height: 24px !important;
+  }
+}
