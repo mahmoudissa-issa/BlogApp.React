@@ -9,6 +9,7 @@ import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminLayout from "./layouts/AdminLayout.";
 import NotFound from "./pages/NotFound";
+import PostDetail from "./pages/PostDetail";
 
 export default function App() {
 
@@ -21,6 +22,7 @@ export default function App() {
           <Route path="/login" element= {<Login/>}/>
           <Route path="/register" element ={<Register/>}/>
           <Route path="/profile" element ={<ProtectedRoute><Profile/></ProtectedRoute>}/>
+          <Route path="/posts/:id" element={<PostDetail/>}/>
 
         </Route>
           <Route path="/admin" element={
@@ -29,7 +31,6 @@ export default function App() {
           </ProtectedRoute>
         }>
           <Route index element={<AdminDashboard/>}/>
-          {/* add /admin/users, /admin/tags, /admin/posts, etc */}
         </Route>
         <Route path="*" element={<NotFound/>}/>
       </Routes>
