@@ -1,11 +1,12 @@
 // src/components/NavBar.tsx
-
 import { Navbar, Nav, Container } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { logout } from "../features/auth/authSlice";
 import logo from "../assets/m-logo-design.svg";
-import "../styles/NavBar.css";
+import "../styles/Navbar.css"
+
+
 
 export default function NavBar() {
   const { user } = useAppSelector((state) => state.auth);
