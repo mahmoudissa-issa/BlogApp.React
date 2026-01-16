@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { fetchPosts } from "../features/posts/postSlice";
 import { fetchTags } from "../features/tags/tagSlice";
@@ -22,7 +22,6 @@ function Home() {
   const {
     tags,
     loading: tagsLoading,
-    error: tagsError,
   } = useAppSelector((state) => state.tags);
 
   const [activeTag, setActiveTag] = useState<string>("All");
