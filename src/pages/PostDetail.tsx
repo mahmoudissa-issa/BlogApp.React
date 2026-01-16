@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import  { useEffect } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import defaultAvatar from "../assets/avatar.png";

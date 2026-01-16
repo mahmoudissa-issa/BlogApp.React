@@ -1,5 +1,3 @@
-// src/components/common/ErrorAlert.tsx
-import React from 'react';
 
 interface ErrorAlertProps {
   message: string;
