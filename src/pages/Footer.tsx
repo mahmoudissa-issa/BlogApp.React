@@ -1,5 +1,4 @@
 // src/components/Footer.tsx
-import React from "react";
 import { Container } from "react-bootstrap";
 import { FaFacebook, FaTwitter, FaGithub } from "react-icons/fa";
 import "../styles/Footer.css";
