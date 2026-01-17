@@ -38,7 +38,7 @@ export default function NavBar() {
             {!user && (
               <>
                 <Link to="/login" className="nav-btn nav-btn-outline">
-                  Sign 
+                  Sign In
                 </Link>
                 <Link to="/Register" className="nav-btn nav-btn-outline">
                   Register
