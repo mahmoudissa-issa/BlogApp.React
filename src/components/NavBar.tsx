@@ -49,11 +49,11 @@ export default function NavBar() {
             {user && (
               <>
                 {user.role === "Admin" && (
-                  <Link to="/admin" className="nav-btn nav-btn-solid">
+                  <Link to="/admin" className="nav-btn nav-btn-outline">
                     Admin
                   </Link>
                 )}
-                <Link to="/profile" className="nav-btn nav-btn-solid">
+                <Link to="/profile" className="nav-btn nav-btn-outline">
                   Settings
                 </Link>
                 <Link to="/" className="nav-btn nav-btn-outline" onClick={handleLogout}>

@@ -144,7 +144,7 @@ function Home() {
                       className="post-image"
                       onError={(e) => {
                         // Fallback image if loading fails
-                        e.currentTarget.src = "/placeholder.jpg";
+                         e.currentTarget.src = defaultAvatar;
                       }}
                     />
                   </div>
@@ -173,7 +173,7 @@ function Home() {
                         alt={post.authorName}
                         className="author-avatar"
                         onError={(e) => {
-                          e.currentTarget.src = "/default-avatar.png";
+                           e.currentTarget.src = defaultAvatar;
                         }}
                       />
                       <div className="author-details">

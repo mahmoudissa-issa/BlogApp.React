@@ -13,7 +13,7 @@ interface AuthState {
 }
 
 const initalState:AuthState={
-    user:null,
+    user:localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!) : null,
     token:localStorage.getItem('token'),
     status:"idle",
 }
@@ -55,7 +55,7 @@ export const registers=createAsyncThunk('auth/register',async (dto:RegisterDto, 
             state.user=null;
             state.token=null;
             localStorage.removeItem('token');
-          
+            localStorage.removeItem('user');
         }
     },
     extraReducers:(builder)=>{
@@ -69,6 +69,7 @@ export const registers=createAsyncThunk('auth/register',async (dto:RegisterDto, 
             state.user=mapToUser(action.payload);
             state.token=action.payload.token;
             localStorage.setItem('token', action.payload.token);
+            localStorage.setItem('user', JSON.stringify(mapToUser(action.payload)));
         }),
         builder.addCase(login.rejected,(state, action)=>{
             state.status='error';
@@ -84,7 +85,7 @@ export const registers=createAsyncThunk('auth/register',async (dto:RegisterDto, 
             state.user=mapToUser(action.payload);
             state.token=action.payload.token;
             localStorage.setItem('token', action.payload.token);
-            
+            localStorage.setItem('user', JSON.stringify(mapToUser(action.payload)));
         }   ),
         builder.addCase(registers.rejected,(state, action)=>{
             state.status='error';
