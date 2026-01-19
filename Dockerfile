@@ -1,20 +1,21 @@
-# 1. Use Node.js
-FROM node:20-alpine
+# Stage 1: Build the app
+FROM node:20-alpine AS build
 
-# 2. Set working directory
 WORKDIR /app
 
-# 3. Copy dependency files
 COPY package*.json ./
 
-# 4. Install dependencies
-RUN npm install
+RUN npm ci
 
-# 5. Copy the rest of the app
 COPY . .
 
-# 6. Expose Vite port
-EXPOSE 5173
+RUN npm run build
 
-# 7. Start dev server
-CMD ["npm", "run", "dev", "--", "--host"]
+# Stage 2: Serve with nginx
+FROM nginx:alpine
+
+COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
