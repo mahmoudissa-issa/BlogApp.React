@@ -1,11 +1,12 @@
 // src/components/NavBar.tsx
-
 import { Navbar, Nav, Container } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { logout } from "../features/auth/authSlice";
 import logo from "../assets/m-logo-design.svg";
-import "../styles/NavBar.css";
+import "../styles/Navbar.css"
+
+
 
 export default function NavBar() {
   const { user } = useAppSelector((state) => state.auth);
@@ -48,11 +49,11 @@ export default function NavBar() {
             {user && (
               <>
                 {user.role === "Admin" && (
-                  <Link to="/admin" className="nav-btn nav-btn-solid">
+                  <Link to="/admin" className="nav-btn nav-btn-outline">
                     Admin
                   </Link>
                 )}
-                <Link to="/profile" className="nav-btn nav-btn-solid">
+                <Link to="/profile" className="nav-btn nav-btn-outline">
                   Settings
                 </Link>
                 <Link to="/" className="nav-btn nav-btn-outline" onClick={handleLogout}>
