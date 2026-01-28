@@ -651,3 +651,47 @@
     align-items: flex-start;
   }
 }
+
+/* Comment Form Login Prompt */
+.comment-form-login-prompt {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 3rem 2.5rem;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(102, 126, 234, 0.25);
+  animation: fadeInUp 0.5s ease;
+  margin: 2rem 0;
+}
+
+.login-message {
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 1.5rem 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.login-prompt-btn {
+  background: white;
+  color: #667eea;
+  padding: 1rem 2.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.login-prompt-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+  background: #f7fafc;
+}
+
+.login-prompt-btn:active {
+  transform: translateY(-1px);
+}
