@@ -15,6 +15,7 @@ import { calculateReadingTime, formatPostDate } from "../utils/dateFormatter";
 import { BsCalendar3, BsArrowLeft } from "react-icons/bs";
 import { BiTime } from "react-icons/bi";
 import DOMPurify from "dompurify";
+import CommentForm from "../components/comment/commentForm";
 
 export default function PostDetail() {
   const { id } = useParams<{ id: string }>();
@@ -227,15 +228,7 @@ export default function PostDetail() {
         <h2 className="comments-title">Discussion</h2>
 
         {/* Comment Form */}
-        <div className="form-group">
-          <label htmlFor="comment-textarea">Add a Comment</label>
-          <textarea
-            id="comment-textarea"
-            className="form-textarea"
-            placeholder="Share your thoughts..."
-          />
-        </div>
-        <button className="submit-comment-btn">Post Comment</button>
+         { id && <CommentForm postId={Number(id)} /> }
 
         {/* Comments List */}
         <div className="comments-list">
