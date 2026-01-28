@@ -15,7 +15,8 @@ import { calculateReadingTime, formatPostDate } from "../utils/dateFormatter";
 import { BsCalendar3, BsArrowLeft } from "react-icons/bs";
 import { BiTime } from "react-icons/bi";
 import DOMPurify from "dompurify";
-import CommentForm from "../components/comment/commentForm";
+import CommentForm from "../components/comment/CommentForm";
+
 
 export default function PostDetail() {
   const { id } = useParams<{ id: string }>();
