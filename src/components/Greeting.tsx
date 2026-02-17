@@ -1,4 +1,4 @@
-import React from 'react'
+
 
 function Greeting( {name}: {name: string} ) {
   return (
