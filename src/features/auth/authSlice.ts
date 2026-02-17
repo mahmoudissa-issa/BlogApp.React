@@ -22,7 +22,8 @@ const mapToUser=(res:AuthResponse):AuthUser =>({
     id:res.userId.toString(),
     username:res.userName,
     email:res.email,
-    role:res.role
+    role:res.role,
+    avatarUrl:res.avatarUrl,
 });
 
 export const login=createAsyncThunk('auth/login',async (dto:LoginDto, thunkAPI)=>{
@@ -31,7 +32,8 @@ export const login=createAsyncThunk('auth/login',async (dto:LoginDto, thunkAPI)=
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }catch(err:any){
-        toast.error(err.result || "Login failed");
+ 
+        toast.error(err.message || "Login failed");
         return thunkAPI.rejectWithValue(err.message || 'Login failed');
     }
 });
@@ -42,7 +44,7 @@ export const registers=createAsyncThunk('auth/register',async (dto:RegisterDto, 
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }catch(err:any){
-          toast.error(err.result || "Registration failed");
+          toast.error(err.message || "Registration failed");
         return thunkAPI.rejectWithValue(err.message || 'Registration failed');
     }
 });
@@ -56,6 +58,12 @@ export const registers=createAsyncThunk('auth/register',async (dto:RegisterDto, 
             state.token=null;
             localStorage.removeItem('token');
             localStorage.removeItem('user');
+        },
+        updateAvatar(state, action) {
+            if (state.user) {
+                state.user.avatarUrl = action.payload;
+                localStorage.setItem('user', JSON.stringify(state.user));
+            }
         }
     },
     extraReducers:(builder)=>{
@@ -94,5 +102,5 @@ export const registers=createAsyncThunk('auth/register',async (dto:RegisterDto, 
     }
  });
 
- export const {logout}=slice.actions;
+ export const {logout, updateAvatar}=slice.actions;
  export default slice.reducer;

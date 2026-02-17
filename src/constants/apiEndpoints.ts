@@ -24,5 +24,11 @@ export const API_ENDPOINTS = {
     CREATE: '/api/comment',
     UPDATE: '/api/comment',
     DELETE: (id: number) => `/api/comment/${id}`,
+  },
+  PROFILE:{
+    CHANGE_PASSWORD:'/api/change-password',
+    GET_PROFILE_INFO:`/api/profile`,
+    UPDATE_PROFILE: `/api/update-profile`,
+    UPLOAD_AVATAR: `/api/upload-avatar`
   }
 };

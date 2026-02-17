@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { CreateCommentRequest, Post,Comment} from "../../types/post";
+import type { CreateCommentRequest, Post,Comment, UpdateCommentRequest} from "../../types/post";
 import { postApi } from "../../api/postsApi";
 import { commentApi } from "../../api/commentsApi";
 
@@ -65,6 +65,34 @@ export const addComment=createAsyncThunk("postDetail/addComment",async(comment:C
 
 })
 
+// Update Comment
+export const updateComment = createAsyncThunk(
+    "postDetail/updateComment",
+    async (updateData: UpdateCommentRequest, thunkAPI) => {
+        try {
+            const updatedComment = await commentApi.update(updateData.id, updateData.content);
+            return updatedComment;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (err: any) {
+            return thunkAPI.rejectWithValue(err.message || 'Failed to update comment');
+        }
+    }
+);
+
+// Delete Comment
+export const deleteComment = createAsyncThunk(
+    "postDetail/deleteComment",
+    async (commentId: number, thunkAPI) => {
+        try {
+            await commentApi.delete(commentId);
+            return commentId;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (err: any) {
+            return thunkAPI.rejectWithValue(err.message || 'Failed to delete comment');
+        }
+    }
+);
+
 const postDetailSlice=createSlice({
     name:"postDetail",
     initialState,
@@ -111,10 +139,38 @@ const postDetailSlice=createSlice({
         state.commentsError=null;
     }).addCase(addComment.fulfilled,(state,action:PayloadAction<Comment>) =>{
         state.commentsLoading=false;
+ 
         state.comments.push(action.payload);
     }).addCase(addComment.rejected,(state,action) =>{
         state.commentsLoading=false;
         state.commentsError=action.payload as string;
+    });
+
+    // Update Comment
+    builder.addCase(updateComment.pending, (state) => {
+        state.commentsLoading = true;
+        state.commentsError = null;
+    }).addCase(updateComment.fulfilled, (state, action: PayloadAction<Comment>) => {
+        state.commentsLoading = false;
+        const index = state.comments.findIndex(comment => comment.id === action.payload.id);
+        if (index !== -1) {
+            state.comments[index] = action.payload;
+        }
+    }).addCase(updateComment.rejected, (state, action) => {
+        state.commentsLoading = false;
+        state.commentsError = action.payload as string;
+    });
+
+    // Delete Comment
+    builder.addCase(deleteComment.pending, (state) => {
+        state.commentsLoading = true;
+        state.commentsError = null;
+    }).addCase(deleteComment.fulfilled, (state, action: PayloadAction<number>) => {
+        state.commentsLoading = false;
+        state.comments = state.comments.filter(comment => comment.id !== action.payload);
+    }).addCase(deleteComment.rejected, (state, action) => {
+        state.commentsLoading = false;
+        state.commentsError = action.payload as string;
     });
 
   }});

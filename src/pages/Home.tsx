@@ -1,4 +1,4 @@
-import  { useEffect, useState } from "react";
+import  { useEffect, useState, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { fetchPosts } from "../features/posts/postSlice";
 import { fetchTags } from "../features/tags/tagSlice";
@@ -11,6 +11,7 @@ import TagsSkeleton from "../components/skeletons/TagsSkeleton";
 import { formatPostDate } from "../utils/dateFormatter";
 import defaultAvatar from "../assets/avatar.png";
 import DomPurify from "dompurify";
+import { FaSearch } from "react-icons/fa";
 function Home() {
   const dispatch = useAppDispatch();
   const {
@@ -25,21 +26,31 @@ function Home() {
   } = useAppSelector((state) => state.tags);
 
   const [activeTag, setActiveTag] = useState<string>("All");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
     dispatch(fetchPosts());
     dispatch(fetchTags());
   }, [dispatch]);
 
-  const filteredPosts =
-    activeTag === "All"
-      ? posts
-      : posts.filter((post) => post.tagNames.some((tag) => tag === activeTag));
-// I need to sanitize the post content before rendering 
-  const sanitizedPosts = filteredPosts.map((post) => ({
-    ...post,
-    content: DomPurify.sanitize(post.content),
-  }));
+  // Memoize filtered and sanitized posts to avoid re-computing on every render
+  const sanitizedPosts = useMemo(() => {
+    const query = searchQuery.toLowerCase().trim();
+
+    const filtered = posts.filter((post) => {
+      const matchesTag = activeTag === "All" || post.tagNames.some((tag) => tag === activeTag);
+      const matchesSearch = !query
+        || post.title.toLowerCase().includes(query)
+        || post.authorName.toLowerCase().includes(query)
+        || post.content.toLowerCase().includes(query);
+      return matchesTag && matchesSearch;
+    });
+
+    return filtered.map((post) => ({
+      ...post,
+      content: DomPurify.sanitize(post.content),
+    }));
+  }, [posts, activeTag, searchQuery]);
     
  
 
@@ -49,6 +60,17 @@ function Home() {
       <div className="hero-section">
         <h4>FullStack Blog App</h4>
         <p>Click a tag to explore posts by topic</p>
+
+        <div className="search-wrapper">
+          <FaSearch className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search posts by title or author..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="search-input"
+          />
+        </div>
       </div>
 
       {/* Error Alert - Only show if there's an error */}
@@ -142,6 +164,8 @@ function Home() {
                       src={`${SERVER_URL}/${post.imageUrl}`}
                       alt={post.title}
                       className="post-image"
+                      loading="lazy"
+                      decoding="async"
                       onError={(e) => {
                         // Fallback image if loading fails
                          e.currentTarget.src = defaultAvatar;
@@ -172,6 +196,8 @@ function Home() {
                         src={defaultAvatar}
                         alt={post.authorName}
                         className="author-avatar"
+                        loading="lazy"
+                        decoding="async"
                         onError={(e) => {
                            e.currentTarget.src = defaultAvatar;
                         }}

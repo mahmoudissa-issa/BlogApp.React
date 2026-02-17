@@ -1,4 +1,4 @@
-import  { useEffect } from "react";
+import  { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import defaultAvatar from "../assets/avatar.png";
@@ -6,6 +6,8 @@ import {
   clearPostDetail,
   fetchComments,
   fetchPostDetail,
+  updateComment,
+  deleteComment,
 } from "../features/postDetails/postDetailSlice";
 import ErrorAlert from "../components/common/ErrorAlert";
 import "../styles/PostDetail.css";
@@ -16,6 +18,8 @@ import { BsCalendar3, BsArrowLeft } from "react-icons/bs";
 import { BiTime } from "react-icons/bi";
 import DOMPurify from "dompurify";
 import CommentForm from "../components/comment/CommentForm";
+import CommentContextMenu from "../components/comment/CommentContextMenu";
+import type { UpdateCommentRequest } from "../types/post";
 
 
 export default function PostDetail() {
@@ -27,10 +31,53 @@ export default function PostDetail() {
     (state) => state.postDetail
   );
 
+  const { user } = useAppSelector((state) => state.auth);
+
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [editingContent, setEditingContent] = useState<string>("");
+
+  const handleEditComment = (commentId: number) => {
+    const comment = comments.find(c => c.id === commentId);
+    if (comment) {
+      setEditingCommentId(commentId);
+      setEditingContent(comment.content);
+    }
+  };
+
+  const handleSaveEdit = async () => {
+    if (editingCommentId && editingContent.trim()) {
+      try {
+        const updateData: UpdateCommentRequest = {
+          id: editingCommentId,
+          content: editingContent.trim()
+        };
+        await dispatch(updateComment(updateData));
+        setEditingCommentId(null);
+        setEditingContent("");
+      } catch (error) {
+        console.error("Failed to update comment:", error);
+      }
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCommentId(null);
+    setEditingContent("");
+  };
+
+  const handleDeleteComment = async (commentId: number) => {
+    try {
+      await dispatch(deleteComment(commentId));
+    } catch (error) {
+      console.error("Failed to delete comment:", error);
+    }
+  };
+
   useEffect(() => {
     if (id) {
       dispatch(fetchPostDetail(Number(id)));
       dispatch(fetchComments(Number(id)));
+    
     }
     // Cleanup on unmount
     return () => {
@@ -258,8 +305,42 @@ export default function PostDetail() {
                       {formatPostDate(comment.createdAt)}
                     </div>
                   </div>
+                  <CommentContextMenu
+                    commentId={comment.id}
+                    commentUserId={comment.userId}
+                    currentUserId={user?.id ? parseInt(user.id) : undefined}
+                    onEdit={handleEditComment}
+                    onDelete={handleDeleteComment}
+                  />
                 </div>
-                <p className="comment-text">{comment.content}</p>
+                {editingCommentId === comment.id ? (
+                  <div className="comment-edit-form">
+                    <textarea
+                      value={editingContent}
+                      onChange={(e) => setEditingContent(e.target.value)}
+                      className="edit-comment-textarea"
+                      rows={3}
+                      placeholder="Edit your comment..."
+                    />
+                    <div className="edit-comment-actions">
+                      <button
+                        onClick={handleSaveEdit}
+                        className="btn btn-sm btn-primary me-2"
+                        disabled={!editingContent.trim()}
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={handleCancelEdit}
+                        className="btn btn-sm btn-outline-secondary"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="comment-text">{comment.content}</p>
+                )}
               </div>
             ))
           )}
