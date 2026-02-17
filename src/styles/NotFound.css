@@ -1,0 +1,153 @@
+/* ==================== NOT FOUND PAGE STYLES ==================== */
+
+.notfound-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  padding: 2rem;
+}
+
+.notfound-content {
+  text-align: center;
+  max-width: 600px;
+}
+
+.notfound-code {
+  font-size: 6rem;
+  font-weight: 700;
+  color: #39bdf9;
+  margin: 0;
+  line-height: 1;
+  animation: fadeInDown 0.6s ease;
+}
+
+.notfound-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 1.5rem 0 1rem;
+  animation: fadeIn 0.8s ease;
+}
+
+.notfound-message {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+  animation: fadeIn 1s ease;
+}
+
+.notfound-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: fadeInUp 1.2s ease;
+}
+
+.btn-go-home,
+.btn-contact {
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.btn-go-home {
+  background-color: #39bdf9;
+  color: white;
+  border-color: #39bdf9;
+}
+
+.btn-go-home:hover {
+  background-color: #2aa5e0;
+  border-color: #2aa5e0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(57, 189, 249, 0.3);
+}
+
+.btn-contact {
+  background-color: transparent;
+  color: #6b7280;
+  border-color: #d1d5db;
+}
+
+.btn-contact:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+  color: #1a1a1a;
+  transform: translateY(-2px);
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==================== RESPONSIVE STYLES ==================== */
+@media (max-width: 768px) {
+  .notfound-code {
+    font-size: 4.5rem;
+  }
+
+  .notfound-title {
+    font-size: 1.75rem;
+  }
+
+  .notfound-message {
+    font-size: 0.95rem;
+  }
+
+  .notfound-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .btn-go-home,
+  .btn-contact {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .notfound-code {
+    font-size: 3.5rem;
+  }
+
+  .notfound-title {
+    font-size: 1.5rem;
+  }
+}

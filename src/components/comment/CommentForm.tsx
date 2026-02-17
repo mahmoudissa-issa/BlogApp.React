@@ -72,7 +72,7 @@ function CommentForm({ postId }: CommentFormProps) {
         <textarea
           id="comment-textarea"
           className="form-textarea"
-          placeholder="Share your thoughts..."
+          placeholder="What  your thoughts..."
           value={content}
           onChange={(e) => setContent(e.target.value)}
           disabled={commentsLoading}

@@ -5,7 +5,7 @@ import type { AuthResponse } from "../types/auth";
 
 
 export interface LoginDto {email:string;password:string;}
-export interface RegisterDto  {userName:string;email:string;password:string;confirmPassword:string;fullName?:string;}
+export interface RegisterDto  {userName:string;email:string;password:string;confirmPassword:string;fullName?:string;roleName?:string;}
 export interface ChangePasswordDto {currentPassword:string;newPassword:string;confirmPassword:string;}
 
 export const authAPI ={

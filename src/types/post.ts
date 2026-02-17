@@ -45,3 +45,8 @@ export interface CreateCommentRequest {
     postId:number;
     content:string;
 }
+
+export interface UpdateCommentRequest {
+    id: number;
+    content: string;
+}

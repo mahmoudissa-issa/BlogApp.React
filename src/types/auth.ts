@@ -15,6 +15,7 @@ export interface AuthResponse {
     userName:string;
     email:string;
     role:Role;
+    avatarUrl?:string;
     token:string;
 }
 
@@ -30,6 +31,7 @@ export const registerSchema = z.object({
     email: z.string().email('Invalid email address'),
     password: z.string().min(6, 'Password must be at least 6 characters long'),
     confirmPassword: z.string().min(6, 'Password must be at least 6 characters long'),
+    roleName: z.enum(['Reader', 'Author'], { message: 'Please select a role' }),
 }).refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
     path: ['confirmPassword'],
