@@ -54,12 +54,11 @@ function Register() {
           className="d-block mx-auto mb-1"
         />
         <h2
-          className="text-center mb-2 fw-bold"
-          style={{ letterSpacing: "-2px" }}
+          className="text-center mb-2 fw-bold auth-heading"
         >
           Sign up to an account
         </h2>
-        <p className="text-center" style={{ color: "#92a6b0" }}>
+        <p className="text-center auth-subtitle">
           Already registered?{" "}
           <Link to="/login" className="login-here">
             Sign in

@@ -147,6 +147,74 @@
   }
 }
 
+/* Forgot Password / Reset Password */
+.forgot-success-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(57, 189, 249, 0.15) 0%, rgba(102, 126, 234, 0.15) 100%);
+  margin: 0 auto 1.5rem;
+}
+
+.forgot-success-icon svg {
+  font-size: 2rem;
+  color: var(--primary-color);
+}
+
+.reset-invalid-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.1);
+  margin: 0 auto 1.5rem;
+}
+
+.reset-invalid-icon svg {
+  font-size: 2rem;
+  color: #ef4444;
+}
+
+.btn-link-styled {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--primary-color);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-size: inherit;
+}
+
+.btn-link-styled:hover {
+  color: #667eea;
+  text-decoration: underline;
+}
+
+/* Auth page text styles */
+.auth-heading {
+  letter-spacing: -2px;
+}
+
+.auth-subtitle {
+  color: #92a6b0;
+}
+
+.auth-subtitle-small {
+  color: #92a6b0;
+  font-size: 0.9rem;
+}
+
+.auth-strong-text {
+  color: #333;
+}
+
 /* End login page styles */
 
 /* Main content area */
