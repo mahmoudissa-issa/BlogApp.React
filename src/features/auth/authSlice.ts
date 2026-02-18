@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { AuthResponse, AuthUser } from "../../types/auth";
-import { authAPI, type LoginDto, type RegisterDto } from "../../api/authApi";
+import { authAPI, type LoginDto, type RegisterDto, type ForgotPasswordDto, type ResetPasswordDto } from "../../api/authApi";
 
 
 import { toast } from "react-toastify";
@@ -46,6 +46,30 @@ export const registers=createAsyncThunk('auth/register',async (dto:RegisterDto, 
     }catch(err:any){
           toast.error(err.message || "Registration failed");
         return thunkAPI.rejectWithValue(err.message || 'Registration failed');
+    }
+});
+
+export const forgotPassword=createAsyncThunk('auth/forgotPassword',async (dto:ForgotPasswordDto, thunkAPI)=>{
+    try{
+        await authAPI.forgotPassword(dto);
+        toast.success("Password reset link sent to your email");
+        return true;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    }catch(err:any){
+        toast.error(err.message || "Failed to send reset link");
+        return thunkAPI.rejectWithValue(err.message || 'Failed to send reset link');
+    }
+});
+
+export const resetPassword=createAsyncThunk('auth/resetPassword',async (dto:ResetPasswordDto, thunkAPI)=>{
+    try{
+        await authAPI.resetPassword(dto);
+        toast.success("Password reset successfully");
+        return true;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    }catch(err:any){
+        toast.error(err.message || "Failed to reset password");
+        return thunkAPI.rejectWithValue(err.message || 'Failed to reset password');
     }
 });
 
