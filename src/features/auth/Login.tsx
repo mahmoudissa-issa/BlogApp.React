@@ -23,8 +23,8 @@ function Login() {
     <div className="login-container">
       <div className="login-form">
         <img src={logo} alt="logo" width="48" height="48" loading="lazy"  className="d-block mx-auto mb-3" />
-        <h2 className="text-center mb-2 fw-bold" style={{letterSpacing:"-2px"}}>Sign in to your account</h2>
-        <p className='text-center' style={{color:"#92a6b0"}}>Don't have an account? <Link to="/Register" className="register-here">Register here</Link></p>
+        <h2 className="text-center mb-2 fw-bold auth-heading">Sign in to your account</h2>
+        <p className='text-center auth-subtitle'>Don't have an account? <Link to="/Register" className="register-here">Register here</Link></p>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="form-group mb-2">
             <label htmlFor="email">Email</label>    
@@ -38,16 +38,17 @@ function Login() {
                 type={showPassword ? "text" : "password"}
                 className="form-control"
                 id="password"
-       
                 {...register("password")}
               />
-              <PasswordToggleButton 
+              <PasswordToggleButton
                 showPassword={showPassword}
                 onToggle={() => setShowPassword(!showPassword)}
               />
             </div>
              {errors.password && <p className="text-danger mt-1">{errors.password.message}</p>}
-            
+             <div className="text-end mt-1">
+              <Link to="/forgot-password" className="login-here auth-subtitle-small">Forgot password?</Link>
+             </div>
           </div>
           <button type="submit" className="btn btn-primary login-btn mt-4 w-100" disabled={isSubmitting}>Sign In</button>
         </form>

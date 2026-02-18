@@ -4,6 +4,8 @@ export const API_ENDPOINTS = {
     LOGIN: '/api/login',
     REGISTER: '/api/register',
     LOGOUT: '/api/logout',
+    FORGOT_PASSWORD: '/api/forgot-password',
+    RESET_PASSWORD: '/api/reset-password',
   },
   TAGS:{
     GET_ALL: '/api/tags',

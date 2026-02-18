@@ -6,4 +6,6 @@ export const ROUTES = {
   profile: '/profile',
   post: (slug: string) => `/posts/${slug}`,
   admin: '/admin',
+  forgotPassword: '/forgot-password',
+  resetPassword: '/reset-password',
 };
