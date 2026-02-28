@@ -25,7 +25,7 @@ function Login() {
         <img src={logo} alt="logo" width="48" height="48" loading="lazy"  className="d-block mx-auto mb-3" />
         <h2 className="text-center mb-2 fw-bold auth-heading">Sign in to your account</h2>
         <p className='text-center auth-subtitle'>Don't have an account? <Link to="/Register" className="register-here">Register here</Link></p>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <div className="form-group mb-2">
             <label htmlFor="email">Email</label>    
             <input type="email" className="form-control" id="email"  {...register("email")}/>

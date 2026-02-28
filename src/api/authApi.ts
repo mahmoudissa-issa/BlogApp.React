@@ -9,6 +9,7 @@ export interface RegisterDto  {userName:string;email:string;password:string;conf
 export interface ChangePasswordDto {currentPassword:string;newPassword:string;confirmPassword:string;}
 export interface ForgotPasswordDto {email:string;}
 export interface ResetPasswordDto {token:string;email:string;newPassword:string;confirmPassword:string;}
+export interface ResendVerificationDto {email:string;}
 
 export const authAPI ={
     login:async (dto:LoginDto):Promise<AuthResponse> =>
@@ -28,5 +29,15 @@ export const authAPI ={
     resetPassword:async (dto:ResetPasswordDto):Promise<void> =>
     {
         await axiosInstance.post(API_ENDPOINTS.AUTH.RESET_PASSWORD, dto);
+    },
+    verifyEmail:async (token:string):Promise<AuthResponse> =>
+    {
+        const res=await axiosInstance.get(API_ENDPOINTS.AUTH.VERIFY_EMAIL(token));
+        return res.data.result;
+    },
+    resendVerification:async (dto:ResendVerificationDto):Promise<{message:string}> =>
+    {
+        const res=await axiosInstance.post(API_ENDPOINTS.AUTH.RESEND_VERIFICATION, dto);
+        return res.data;
     },
 }

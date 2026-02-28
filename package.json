@@ -12,7 +12,9 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:verbose": "vitest run --reporter=verbose",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
