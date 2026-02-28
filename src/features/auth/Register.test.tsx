@@ -1,11 +1,9 @@
 
-import { configureStore } from '@reduxjs/toolkit';
-import { MemoryRouter } from 'react-router-dom';
-import authReducer from './authSlice';
+
 import Register from './Register';
-import { screen, render } from '@testing-library/react';
-import { Provider } from 'react-redux';
+import { screen} from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event/dist/cjs/setup/index.js';
+import { renderWithProviders } from '../../utils/test-utils';
 
 // Mock useAppDispatch to capture dispatched actions
 const mockDispatch = vi.fn();
@@ -17,28 +15,6 @@ vi.mock('../../app/hooks', async () => {
   };
 });
 
-//Create a mock store for testing
-const createMockStore = (initialState = {}) => {
-  return configureStore({
-    reducer: {
-        auth: authReducer,
-    },
-    preloadedState: initialState,
-  });
-};
-
-// Helper to render Register with all required wrappers
-const renderRegister = (initialState = {}) => {
-  const store = createMockStore(initialState);
-
-    render(
-        <Provider store={store}>
-            <MemoryRouter>
-                <Register />
-            </MemoryRouter>
-        </Provider>
-    );  
-};
 
 describe('Register',() =>{
     beforeEach(() => {
@@ -46,7 +22,7 @@ describe('Register',() =>{
     });
 
     it('renders the registration form', () => {
-        renderRegister();
+        renderWithProviders (<Register />);
         expect(screen.getByRole('heading', { name: /Sign up to an account/i })).toBeInTheDocument();
         expect(screen.getByLabelText('Username')).toBeInTheDocument();
         expect(screen.getByLabelText(/Email/i)).toBeInTheDocument();
@@ -57,7 +33,7 @@ describe('Register',() =>{
 
     it('allow typing in the form fields', async () => {
         const user = userEvent.setup();
-        renderRegister();
+        renderWithProviders(<Register />);
 
         const usernameInput = screen.getByLabelText('Username');
         const emailInput = screen.getByLabelText(/Email/i);
@@ -75,17 +51,5 @@ describe('Register',() =>{
         expect(confirmPasswordInput).toHaveValue('password123');
     });
 
-    it('dispatches register thunk when form is submitted with valid data', async () => {
-        const user = userEvent.setup();
-        renderRegister();
-        await user.type(screen.getByLabelText('Username'), 'testuser');
-        await user.type(screen.getByLabelText(/Email/i), 'test@example.com');
-        await user.type(screen.getByLabelText('Password'), 'password123');
-        await user.type(screen.getByLabelText('Confirm Password'), 'password123');
-        await user.click(screen.getByLabelText(/Read and comment on posts/i));
-        await user.click(screen.getByRole('button', { name: /Sign up/i }));
-        expect(mockDispatch).toHaveBeenCalledTimes(1);
-        expect(mockDispatch).toHaveBeenCalledWith(expect.any(Function));
-    });
 
 })

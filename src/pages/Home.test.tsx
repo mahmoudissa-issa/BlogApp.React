@@ -1,46 +1,20 @@
-import { render, screen } from '@testing-library/react';
+import {screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router-dom';
-import { configureStore } from '@reduxjs/toolkit';
+
 import { http, HttpResponse } from 'msw';
 import { server } from '../mocks/server';
-
-import postReducer from '../features/posts/postSlice';
-import tagReducer from '../features/tags/tagSlice';
-import authReducer from '../features/auth/authSlice';
-import postDetailReducer from '../features/postDetails/postDetailSlice';
-import profileReducer from '../features/profile/profileSlice';
+import { renderWithProviders } from '../utils/test-utils';
 import Home from './Home';
 
-// Helper to create a fresh store for each test
-const createTestStore = () =>
-  configureStore({
-    reducer: {
-      auth: authReducer,
-      post: postReducer,
-      tags: tagReducer,
-      postDetail: postDetailReducer,
-      profile: profileReducer,
-    },
-  });
 
-// Helper to render Home with all required providers
-const renderHome = () => {
-  const store = createTestStore();
-  return render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <Home />
-      </MemoryRouter>
-    </Provider>
-  );
-};
+
 
 describe('Home Page', () => {
-  it('displays posts after fetching from the API', async () => {
-    renderHome();
+  beforeEach(() => {
+    renderWithProviders(<Home />);
+  });
 
+  it('displays posts after fetching from the API', async () => {
     // Wait for posts to appear
     expect(await screen.findByText('Getting Started with React')).toBeInTheDocument();
     expect(screen.getByText('TypeScript Best Practices')).toBeInTheDocument();
@@ -48,8 +22,6 @@ describe('Home Page', () => {
   });
 
   it('displays tags after fetching from the API', async () => {
-    renderHome();
-
     // Wait for tags to appear
     expect(await screen.findByText('React')).toBeInTheDocument();
     expect(screen.getByText('TypeScript')).toBeInTheDocument();
@@ -58,24 +30,18 @@ describe('Home Page', () => {
   });
 
   it('displays author names on post cards', async () => {
-    renderHome();
-
     expect(await screen.findByText('Getting Started with React')).toBeInTheDocument();
     expect(screen.getAllByText('John Doe')).toHaveLength(2); // 2 posts by John Doe
     expect(screen.getByText('Jane Smith')).toBeInTheDocument();
   });
 
   it('displays category badges on post cards', async () => {
-    renderHome();
-
     expect(await screen.findByText('Getting Started with React')).toBeInTheDocument();
     expect(screen.getAllByText('Frontend')).toHaveLength(2);
     expect(screen.getByText('Backend')).toBeInTheDocument();
   });
 
   it('filters posts when a tag is clicked', async () => {
-    renderHome();
-
     // Wait for posts and tags to load
     expect(await screen.findByText('Getting Started with React')).toBeInTheDocument();
 
@@ -90,8 +56,6 @@ describe('Home Page', () => {
   });
 
   it('shows all posts when "All" tag is clicked after filtering', async () => {
-    renderHome();
-
     expect(await screen.findByText('Getting Started with React')).toBeInTheDocument();
 
     // Filter by React tag
@@ -106,8 +70,6 @@ describe('Home Page', () => {
   });
 
   it('filters posts by search query', async () => {
-    renderHome();
-
     expect(await screen.findByText('Getting Started with React')).toBeInTheDocument();
 
     // Type in the search input
@@ -121,8 +83,6 @@ describe('Home Page', () => {
   });
 
   it('shows empty state when no posts match search', async () => {
-    renderHome();
-
     expect(await screen.findByText('Getting Started with React')).toBeInTheDocument();
 
     const searchInput = screen.getByPlaceholderText(/search posts/i);
@@ -142,15 +102,14 @@ describe('Home Page', () => {
       })
     );
 
-    renderHome();
+    // Re-render so the component picks up the new handler
+    renderWithProviders(<Home />);
 
     // Wait for error message to appear
     expect(await screen.findByText(/Request failed with status code 500/i)).toBeInTheDocument();
   });
 
   it('displays the hero section', async () => {
-    renderHome();
-
     expect(screen.getByText('FullStack Blog App')).toBeInTheDocument();
     expect(screen.getByText('Click a tag to explore posts by topic')).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/search posts/i)).toBeInTheDocument();

@@ -19,6 +19,8 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const PostDetail = lazy(() => import("./pages/PostDetail"));
 const ForgotPassword = lazy(() => import("./features/auth/ForgotPassword"));
 const ResetPassword = lazy(() => import("./features/auth/ResetPassword"));
+const CheckEmail = lazy(() => import("./features/auth/CheckEmail"));
+const VerifyEmail = lazy(() => import("./features/auth/VerifyEmail"));
 
 export default function App() {
 
@@ -32,6 +34,8 @@ export default function App() {
           <Route path="/register" element ={<Register/>}/>
           <Route path="/forgot-password" element={<ForgotPassword/>}/>
           <Route path="/reset-password" element={<ResetPassword/>}/>
+          <Route path="/check-email" element={<CheckEmail/>}/>
+          <Route path="/verify-email/:token" element={<VerifyEmail/>}/>
           <Route path="/profile" element ={<ProtectedRoute><Profile/></ProtectedRoute>}/>
           <Route path="/posts/:id" element={<PostDetail/>}/>
           <Route path="/settings" element={<ProtectedRoute><Settings/></ProtectedRoute>}>

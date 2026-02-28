@@ -8,4 +8,6 @@ export const ROUTES = {
   admin: '/admin',
   forgotPassword: '/forgot-password',
   resetPassword: '/reset-password',
+  checkEmail: '/check-email',
+  verifyEmail: '/verify-email/:token',
 };

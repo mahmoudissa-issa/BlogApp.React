@@ -6,6 +6,8 @@ export const API_ENDPOINTS = {
     LOGOUT: '/api/logout',
     FORGOT_PASSWORD: '/api/forgot-password',
     RESET_PASSWORD: '/api/reset-password',
+    VERIFY_EMAIL: (token: string) => `/api/verify-email/${token}`,
+    RESEND_VERIFICATION: '/api/resend-verification',
   },
   TAGS:{
     GET_ALL: '/api/tags',
