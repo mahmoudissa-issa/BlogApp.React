@@ -1,130 +1,206 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { AuthResponse, AuthUser } from "../../types/auth";
-import { authAPI, type LoginDto, type RegisterDto, type ForgotPasswordDto, type ResetPasswordDto } from "../../api/authApi";
-
-
+import {
+  authAPI,
+  type LoginDto,
+  type RegisterDto,
+  type ForgotPasswordDto,
+  type ResetPasswordDto,
+  type ResendVerificationDto,
+} from "../../api/authApi";
 import { toast } from "react-toastify";
 
+// ── Types ──────────────────────────────────────────────
+
 interface AuthState {
-    user:AuthUser |null;
-    token:string | null;
-    status:"idle" | "loading" | "error";
-    error?:string;
+  user: AuthUser | null;
+  token: string | null;
+  status: "idle" | "loading" | "error";
+  error?: string;
+  registeredEmail?: string;
 }
 
-const initalState:AuthState={
-    user:localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!) : null,
-    token:localStorage.getItem('token'),
-    status:"idle",
-}
+// ── Helpers ────────────────────────────────────────────
 
-const mapToUser=(res:AuthResponse):AuthUser =>({
-    id:res.userId.toString(),
-    username:res.userName,
-    email:res.email,
-    role:res.role,
-    avatarUrl:res.avatarUrl,
+const loadJSON = <T>(key: string): T | null => {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : null;
+  } catch {
+    return null;
+  }
+};
+
+const mapToUser = (res: AuthResponse): AuthUser => ({
+  id: res.userId.toString(),
+  username: res.userName,
+  email: res.email,
+  role: res.role,
+  avatarUrl: res.avatarUrl,
 });
 
-export const login=createAsyncThunk('auth/login',async (dto:LoginDto, thunkAPI)=>{
-    try{
-        return await authAPI.login(dto);
+/** Persist credentials to localStorage and mutate state. */
+const setCredentials = (state: AuthState, res: AuthResponse) => {
+  const user = mapToUser(res);
+  state.user = user;
+  state.token = res.token;
+  state.status = "idle";
+  localStorage.setItem("token", res.token);
+  localStorage.setItem("user", JSON.stringify(user));
+};
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    }catch(err:any){
- 
-        toast.error(err.message || "Login failed");
-        return thunkAPI.rejectWithValue(err.message || 'Login failed');
+const getErrorMessage = (err: unknown, fallback: string): string => {
+  if (err && typeof err === "object" && "message" in err) {
+    return (err as { message: string }).message || fallback;
+  }
+  return fallback;
+};
+
+// ── Initial State ──────────────────────────────────────
+
+const initialState: AuthState = {
+  user: loadJSON<AuthUser>("user"),
+  token: localStorage.getItem("token"),
+  status: "idle",
+};
+
+// ── Thunks ─────────────────────────────────────────────
+
+export const login = createAsyncThunk(
+  "auth/login",
+  async (dto: LoginDto, { rejectWithValue }) => {
+    try {
+      return await authAPI.login(dto);
+    } catch (err) {
+      const msg = getErrorMessage(err, "Login failed");
+      toast.error(msg);
+      return rejectWithValue(msg);
     }
-});
+  },
+);
 
-export const registers=createAsyncThunk('auth/register',async (dto:RegisterDto, thunkAPI)=>{
-    try{
-        return await authAPI.register(dto);
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    }catch(err:any){
-          toast.error(err.message || "Registration failed");
-        return thunkAPI.rejectWithValue(err.message || 'Registration failed');
+export const registers = createAsyncThunk(
+  "auth/register",
+  async (dto: RegisterDto, { rejectWithValue }) => {
+    try {
+      await authAPI.register(dto);
+      return dto.email;
+    } catch (err) {
+      const msg = getErrorMessage(err, "Registration failed");
+      toast.error(msg);
+      return rejectWithValue(msg);
     }
-});
+  },
+);
 
-export const forgotPassword=createAsyncThunk('auth/forgotPassword',async (dto:ForgotPasswordDto, thunkAPI)=>{
-    try{
-        await authAPI.forgotPassword(dto);
-        toast.success("Password reset link sent to your email");
-        return true;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    }catch(err:any){
-        toast.error(err.message || "Failed to send reset link");
-        return thunkAPI.rejectWithValue(err.message || 'Failed to send reset link');
+export const verifyEmail = createAsyncThunk(
+  "auth/verifyEmail",
+  async (token: string, { rejectWithValue }) => {
+    try {
+      return await authAPI.verifyEmail(token);
+    } catch (err) {
+      return rejectWithValue(getErrorMessage(err, "Email verification failed"));
     }
-});
+  },
+);
 
-export const resetPassword=createAsyncThunk('auth/resetPassword',async (dto:ResetPasswordDto, thunkAPI)=>{
-    try{
-        await authAPI.resetPassword(dto);
-        toast.success("Password reset successfully");
-        return true;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    }catch(err:any){
-        toast.error(err.message || "Failed to reset password");
-        return thunkAPI.rejectWithValue(err.message || 'Failed to reset password');
+export const resendVerification = createAsyncThunk(
+  "auth/resendVerification",
+  async (dto: ResendVerificationDto, { rejectWithValue }) => {
+    try {
+      await authAPI.resendVerification(dto);
+      toast.success("Verification email sent! Please check your inbox");
+    } catch (err) {
+      const msg = getErrorMessage(err, "Failed to resend verification email");
+      toast.error(msg);
+      return rejectWithValue(msg);
     }
-});
+  },
+);
 
- const slice =createSlice({
-    name:'auth',
-    initialState:initalState,
-    reducers:{
-        logout(state){
-            state.user=null;
-            state.token=null;
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-        },
-        updateAvatar(state, action) {
-            if (state.user) {
-                state.user.avatarUrl = action.payload;
-                localStorage.setItem('user', JSON.stringify(state.user));
-            }
-        }
+export const forgotPassword = createAsyncThunk(
+  "auth/forgotPassword",
+  async (dto: ForgotPasswordDto, { rejectWithValue }) => {
+    try {
+      await authAPI.forgotPassword(dto);
+      toast.success("Password reset link sent to your email");
+    } catch (err) {
+      const msg = getErrorMessage(err, "Failed to send reset link");
+      toast.error(msg);
+      return rejectWithValue(msg);
+    }
+  },
+);
+
+export const resetPassword = createAsyncThunk(
+  "auth/resetPassword",
+  async (dto: ResetPasswordDto, { rejectWithValue }) => {
+    try {
+      await authAPI.resetPassword(dto);
+      toast.success("Password reset successfully");
+    } catch (err) {
+      const msg = getErrorMessage(err, "Failed to reset password");
+      toast.error(msg);
+      return rejectWithValue(msg);
+    }
+  },
+);
+
+// ── Slice ──────────────────────────────────────────────
+
+const setPending = (state: AuthState) => {
+  state.status = "loading";
+  state.error = undefined;
+};
+
+const setRejected = (state: AuthState, action: PayloadAction<unknown>) => {
+  state.status = "error";
+  state.error = action.payload as string;
+};
+
+const slice = createSlice({
+  name: "auth",
+  initialState,
+  reducers: {
+    logout(state) {
+      state.user = null;
+      state.token = null;
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
     },
-    extraReducers:(builder)=>{
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        builder.addCase(login.pending,(state)=>{
-            state.status='loading';
-            state.error=undefined;
-        }),
-        builder.addCase(login.fulfilled,(state, action)=>{
-            state.status='idle';
-            state.user=mapToUser(action.payload);
-            state.token=action.payload.token;
-            localStorage.setItem('token', action.payload.token);
-            localStorage.setItem('user', JSON.stringify(mapToUser(action.payload)));
-        }),
-        builder.addCase(login.rejected,(state, action)=>{
-            state.status='error';
-            state.error=action.payload as string;
-        }),
+    updateAvatar(state, action: PayloadAction<string>) {
+      if (state.user) {
+        state.user.avatarUrl = action.payload;
+        localStorage.setItem("user", JSON.stringify(state.user));
+      }
+    },
+    clearRegisteredEmail(state) {
+      state.registeredEmail = undefined;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      // Login
+      .addCase(login.pending, setPending)
+      .addCase(login.fulfilled, (state, { payload }) => setCredentials(state, payload))
+      .addCase(login.rejected, setRejected)
+      // Register
+      .addCase(registers.pending, setPending)
+      .addCase(registers.fulfilled, (state, { payload }) => {
+        state.status = "idle";
+        state.registeredEmail = payload;
+      })
+      .addCase(registers.rejected, setRejected)
+      // Verify Email
+      .addCase(verifyEmail.pending, setPending)
+      .addCase(verifyEmail.fulfilled, (state, { payload }) => setCredentials(state, payload))
+      .addCase(verifyEmail.rejected, setRejected)
+      // Resend Verification
+      .addCase(resendVerification.pending, setPending)
+      .addCase(resendVerification.fulfilled, (state) => { state.status = "idle"; })
+      .addCase(resendVerification.rejected, setRejected);
+  },
+});
 
-        builder.addCase(registers.pending,(state)=>{     
-            state.status='loading';
-            state.error=undefined;
-        }),
-        builder.addCase(registers.fulfilled,(state, action)=>{
-            state.status='idle';    
-            state.user=mapToUser(action.payload);
-            state.token=action.payload.token;
-            localStorage.setItem('token', action.payload.token);
-            localStorage.setItem('user', JSON.stringify(mapToUser(action.payload)));
-        }   ),
-        builder.addCase(registers.rejected,(state, action)=>{
-            state.status='error';
-            state.error=action.payload as string;
-        })
-    }
- });
-
- export const {logout, updateAvatar}=slice.actions;
- export default slice.reducer;
+export const { logout, updateAvatar, clearRegisteredEmail } = slice.actions;
+export default slice.reducer;

@@ -7,19 +7,20 @@ import { useForm } from "react-hook-form";
 import { registers } from "./authSlice";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import PasswordToggleButton from "../../components/common/PasswordToggleButton";
+import { ROUTES } from "../../core/routes";
 import "../../styles/Register.css";
+
 function Register() {
   const { user } = useAppSelector((state) => state.auth);
-  const navigate = useNavigate();
-  useEffect(() => {
-    if (user) {
-      navigate("/", { replace: true });
-    }
-  }, [user, navigate]);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  useEffect(() => {
+    if (user) navigate("/", { replace: true });
+  }, [user, navigate]);
 
   const {
     register,
@@ -27,20 +28,24 @@ function Register() {
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
-    defaultValues: {
-      roleName: 'Reader',
-    },
+    defaultValues: { roleName: "Reader" },
   });
-  const onSubmit = (data: RegisterFormData) => {
-    dispatch(
-      registers({
-        userName: data.username,
-        email: data.email,
-        password: data.password,
-        confirmPassword: data.confirmPassword,
-        roleName: data.roleName,
-      }),
-    );
+
+  const onSubmit = async (data: RegisterFormData) => {
+    try {
+      await dispatch(
+        registers({
+          userName: data.username,
+          email: data.email,
+          password: data.password,
+          confirmPassword: data.confirmPassword,
+          roleName: data.roleName,
+        }),
+      ).unwrap();
+      navigate(ROUTES.checkEmail, { replace: true });
+    } catch {
+      // Error handled by thunk toast
+    }
   };
   return (
     <div className="register-container">
