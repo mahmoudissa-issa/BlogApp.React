@@ -1,6 +1,7 @@
 import z from "zod";
+import { Roles } from "../constants/enums";
 
-export type Role='Reader' | 'Author' | 'Admin';
+export type Role = `${Roles}`;   // 'Admin' | 'Author' | 'Reader' — derived from enum
 
 export interface AuthUser {
   id: string;
@@ -31,7 +32,7 @@ export const registerSchema = z.object({
     email: z.string().email('Invalid email address'),
     password: z.string().min(6, 'Password must be at least 6 characters long'),
     confirmPassword: z.string().min(6, 'Password must be at least 6 characters long'),
-    roleName: z.enum(['Reader', 'Author'], { message: 'Please select a role' }),
+    roleName: z.enum([Roles.READER, Roles.AUTHOR], { message: 'Please select a role' }),
 }).refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
     path: ['confirmPassword'],

@@ -21,7 +21,7 @@ export interface CreatePostRequest {
     content:string;
     authorId:number;
     categoryId:number;
-    tagIds:number[];
+    tagNames:string[];
     postImage?:File | null;
 
 }
@@ -33,12 +33,13 @@ export interface UpdatePostRequest extends CreatePostRequest {
 
 export interface Comment {
     id:number;
-    postId:number;
-    userId:number;
-    userName:string;
     content:string;
     createdAt:string;
-    avatarUrl?:string;
+    postId:number;
+    postTitle:string;
+    userId:number;
+    userName:string;
+    avatrUrl?:string;
 }
 
 export interface CreateCommentRequest {

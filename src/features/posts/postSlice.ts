@@ -18,6 +18,18 @@ export const fetchPosts=createAsyncThunk("posts/fetchAll",async(_, thunkAPI)=>{
     }
 });
 
+export const fetchPostsByUser = createAsyncThunk(
+    "posts/fetchByUser",
+    async (userId: number, thunkAPI) => {
+        try {
+            return await postApi.getByUser(userId);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (err: any) {
+            return thunkAPI.rejectWithValue(err.message || 'Failed to fetch user posts');
+        }
+    }
+);
+
 export const fetchPostById=createAsyncThunk("posts/fetchById",async(id:number,thunkAPI) =>{
     try{
         return await postApi.getById(id);
@@ -98,6 +110,20 @@ const postSlice=createSlice({
             state.items=action.payload;
         });
         builder.addCase(fetchPosts.rejected,(state,action)=>{
+            state.loading=false;
+            state.error=action.payload as string;
+        });
+
+        // Fetch posts by user
+        builder.addCase(fetchPostsByUser.pending,(state) =>{
+            state.loading=true;
+            state.error=null;
+        });
+        builder.addCase(fetchPostsByUser.fulfilled,(state, action) =>{
+            state.loading=false;
+            state.items=action.payload;
+        });
+        builder.addCase(fetchPostsByUser.rejected,(state,action)=>{
             state.loading=false;
             state.error=action.payload as string;
         });

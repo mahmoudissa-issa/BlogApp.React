@@ -8,6 +8,7 @@ import { registers } from "./authSlice";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import PasswordToggleButton from "../../components/common/PasswordToggleButton";
 import { ROUTES } from "../../core/routes";
+import { Roles } from "../../constants/enums";
 import "../../styles/Register.css";
 
 function Register() {
@@ -28,7 +29,7 @@ function Register() {
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { roleName: "Reader" },
+    defaultValues: { roleName: Roles.READER },
   });
 
   const onSubmit = async (data: RegisterFormData) => {
@@ -140,7 +141,7 @@ function Register() {
                 <input
                   type="radio"
                   id="reader"
-                  value="Reader"
+                  value={Roles.READER}
                   {...register("roleName")}
                   className="form-check-input"
                 />
@@ -152,7 +153,7 @@ function Register() {
                 <input
                   type="radio"
                   id="author"
-                  value="Author"
+                  value={Roles.AUTHOR}
                   {...register("roleName")}
                   className="form-check-input"
                 />

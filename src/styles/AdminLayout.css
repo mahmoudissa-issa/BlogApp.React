@@ -1,0 +1,340 @@
+/* ==================== ADMIN LAYOUT ==================== */
+
+:root {
+  --sidebar-width: 240px;
+  --sidebar-collapsed: 60px;
+  --sidebar-gradient: linear-gradient(180deg, #39bdf9 0%, #667eea 100%);
+  --sidebar-hover: rgba(255, 255, 255, 0.15);
+  --sidebar-active-bg: rgba(255, 255, 255, 0.22);
+  --sidebar-text: rgba(255, 255, 255, 0.8);
+  --sidebar-text-active: #ffffff;
+  --admin-bg: #f4f7fb;
+}
+
+/* ==================== LAYOUT ROOT ==================== */
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ==================== SIDEBAR ==================== */
+.admin-sidebar {
+  width: var(--sidebar-width);
+  background: var(--sidebar-gradient);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 1000;
+  transition: width 0.3s ease, transform 0.3s ease;
+}
+
+/* Header */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 1.1rem 1.15rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  position: relative;
+  min-height: 62px;
+}
+
+.sidebar-logo {
+  width: 38px;
+  height: 38px;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-brand {
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* Toggle button — hidden on desktop */
+.sidebar-toggle-btn {
+  display: none;
+}
+
+/* Navigation */
+.sidebar-nav {
+  flex: 1;
+  padding: 0.75rem 0.6rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-nav-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  color: rgba(255, 255, 255, 0.45);
+  padding: 0.9rem 0.7rem 0.4rem;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  color: var(--sidebar-text);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition: all 0.18s ease;
+  border: none;
+  background: none;
+  cursor: pointer;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sidebar-nav-item:hover {
+  background: var(--sidebar-hover);
+  color: var(--sidebar-text-active);
+}
+
+.sidebar-nav-item.active {
+  background: var(--sidebar-active-bg);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.sidebar-nav-icon {
+  font-size: 1.05rem;
+  width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sidebar-nav-label-text {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* Footer (user) */
+.sidebar-footer {
+  padding: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.45rem 0.5rem;
+  border-radius: 8px;
+  cursor: default;
+  overflow: hidden;
+}
+
+.sidebar-user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.8rem;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+}
+
+.sidebar-user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sidebar-user-info {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.sidebar-user-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.sidebar-user-role {
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* ==================== MAIN CONTENT ==================== */
+.admin-main {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  background: var(--admin-bg);
+  min-height: 100vh;
+  transition: margin-left 0.3s ease;
+  overflow-x: hidden;
+  /* prevent the main area from ever being wider than viewport minus sidebar */
+  max-width: calc(100vw - var(--sidebar-width));
+}
+
+.admin-content {
+  padding: 1.75rem 2rem;
+  overflow: hidden;
+}
+
+/* ==================== OVERLAY ==================== */
+.sidebar-overlay {
+  display: none;
+}
+
+/* ==================== RESPONSIVE — SMALL SCREENS ==================== */
+@media (max-width: 992px) {
+
+  /* Collapsed sidebar (icon-only, always visible) */
+  .admin-sidebar {
+    width: var(--sidebar-collapsed);
+    overflow: hidden;
+  }
+
+  /* Expanded sidebar via class */
+  .admin-sidebar.open {
+    width: var(--sidebar-width);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25);
+  }
+
+  .admin-main {
+    margin-left: var(--sidebar-collapsed);
+    max-width: calc(100vw - var(--sidebar-collapsed));
+  }
+
+  /* Show toggle button */
+  .sidebar-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  .sidebar-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+  }
+
+  /* When collapsed: hide text, labels, user info */
+  .admin-sidebar:not(.open) .sidebar-brand,
+  .admin-sidebar:not(.open) .sidebar-nav-label,
+  .admin-sidebar:not(.open) .sidebar-nav-label-text,
+  .admin-sidebar:not(.open) .sidebar-user-info {
+    display: none;
+  }
+
+  /* Center the toggle arrow when collapsed */
+  .admin-sidebar:not(.open) .sidebar-toggle-btn {
+    margin-left: 0;
+  }
+
+  /* Center items when collapsed */
+  .admin-sidebar:not(.open) .sidebar-header {
+    justify-content: center;
+    padding: 1.1rem 0.5rem;
+    gap: 0;
+  }
+
+  .admin-sidebar:not(.open) .sidebar-nav {
+    padding: 0.75rem 0.35rem;
+    align-items: center;
+  }
+
+  .admin-sidebar:not(.open) .sidebar-nav-item {
+    justify-content: center;
+    padding: 0.6rem;
+    width: auto;
+  }
+
+  .admin-sidebar:not(.open) .sidebar-footer {
+    padding: 0.75rem 0.35rem;
+  }
+
+  .admin-sidebar:not(.open) .sidebar-user {
+    justify-content: center;
+    padding: 0.45rem 0;
+  }
+
+  /* Show the logo only (hide toggle) when collapsed,
+     show brand + toggle when expanded */
+  .admin-sidebar:not(.open) .sidebar-logo {
+    width: 34px;
+    height: 34px;
+  }
+
+  /* Overlay when expanded */
+  .sidebar-expanded .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+  }
+
+  /* Admin content: constrain table overflow */
+  .admin-content {
+    padding: 1.25rem 0.75rem;
+    overflow-x: hidden;
+  }
+
+  .admin-content .MuiPaper-root {
+    overflow-x: auto;
+  }
+}
+
+/* ==================== DESKTOP ==================== */
+@media (min-width: 993px) {
+  .sidebar-toggle-btn {
+    display: none !important;
+  }
+  .sidebar-overlay {
+    display: none !important;
+  }
+}
+
+/* ==================== FULLSCREEN TABLE OVERRIDE ==================== */
+/* When MRT enters fullscreen, the Paper gets position:fixed.
+   Ensure it covers the entire viewport including the sidebar. */
+.MuiPaper-root[style*="position: fixed"] {
+  z-index: 1200 !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  border-radius: 0 !important;
+}

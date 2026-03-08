@@ -5,6 +5,11 @@ import type { CreateCommentRequest,Comment} from "../types/post";
 
 export const commentApi={
 
+    async getAll():Promise<Comment[]>{
+        const res= await axiosInstance.get(API_ENDPOINTS.COMMENTS.GET_ALL);
+        return res.data.result;
+    },
+
     async getByPostId(postId:number):Promise<Comment[]>{
         const res= await axiosInstance.get(API_ENDPOINTS.COMMENTS.GET_BY_POST(postId));
         return res.data.result;

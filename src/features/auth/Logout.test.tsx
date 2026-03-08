@@ -1,12 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer, { logout } from './authSlice';
 import type { AuthUser } from '../../types/auth';
+import { Roles } from '../../constants/enums';
 
 const mockUser: AuthUser = {
   id: '1',
   username: 'testuser',
   email: 'test@example.com',
-  role: 'Reader',
+  role: Roles.READER,
 };
 
 const createStoreWithUser = () =>

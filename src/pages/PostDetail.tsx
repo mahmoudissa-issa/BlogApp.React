@@ -166,7 +166,7 @@ export default function PostDetail() {
         <div className="post-meta">
           <div className="meta-item">
             <img
-              src={`${SERVER_URL}/${post.avatarUrl}`}
+              src={post.avatarUrl ? `${SERVER_URL}/${post.avatarUrl}` : defaultAvatar}
               alt={post.authorName}
               className="author-avatar"
               onError={(e) => {
@@ -192,7 +192,7 @@ export default function PostDetail() {
       <div className="featured-image-container">
         <div className="image-wrapper">
           <img
-            src={`${SERVER_URL}/${post.imageUrl}`}
+            src={post.imageUrl ? `${SERVER_URL}/${post.imageUrl}` : defaultAvatar}
             alt={post.title}
             className="featured-image"
             onError={(e) => {
@@ -292,7 +292,7 @@ export default function PostDetail() {
               <div className="comment" key={comment.id}>
                 <div className="comment-header">
                   <img
-                    src={`${SERVER_URL}/${comment.avatarUrl}`}
+                    src={comment.avatrUrl ? `${SERVER_URL}/${comment.avatrUrl}` : defaultAvatar}
                     alt="Commenter Avatar"
                     className="commenter-avatar"
                     onError={(e) => {
