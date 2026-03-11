@@ -1,5 +1,3 @@
-//Azure App Service Entry Point 
-
 import express from 'express';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -12,7 +10,8 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.static(join(__dirname, 'dist')));
 
-app.get('*', (req, res) => {
+// Express 5 requires (req, res, next) or use a wildcard pattern
+app.get('/{*splat}', (req, res) => {
   res.sendFile(join(__dirname, 'dist', 'index.html'));
 });
 
