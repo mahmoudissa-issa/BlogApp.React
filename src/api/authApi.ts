@@ -1,7 +1,7 @@
 
 import { API_ENDPOINTS } from "../constants/apiEndpoints";
 import { axiosInstance } from "../services/axiosInstance";
-import type { AuthResponse } from "../types/auth";
+import type { AuthResponse } from "../types/auth";  
 
 
 export interface LoginDto {email:string;password:string;}
