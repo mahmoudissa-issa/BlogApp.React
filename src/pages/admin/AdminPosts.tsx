@@ -22,7 +22,7 @@ export default function AdminPosts() {
   const [deleting, setDeleting] = useState<number | null>(null);
 
   useEffect(() => {
-    dispatch(fetchPosts());
+    dispatch(fetchPosts({}));
   }, [dispatch]);
 
   const handleDelete = async (id: number, title: string) => {

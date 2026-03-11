@@ -161,7 +161,6 @@ export default function PostDetail() {
 
       {/* Post Header */}
       <header className="post-header">
-        <span className="category-badge">{post.categoryName}</span>
         <h1 className="post-title">{post.title}</h1>
         <div className="post-meta">
           <div className="meta-item">
@@ -359,7 +358,6 @@ export default function PostDetail() {
               className="related-post-image"
             />
             <div className="related-post-content">
-              <div className="related-post-category">Development</div>
               <h4 className="related-post-title">
                 Understanding React Hooks and State Management
               </h4>
@@ -374,7 +372,6 @@ export default function PostDetail() {
               className="related-post-image"
             />
             <div className="related-post-content">
-              <div className="related-post-category">Tutorial</div>
               <h4 className="related-post-title">
                 Building Scalable APIs with Node.js
               </h4>
@@ -389,7 +386,6 @@ export default function PostDetail() {
               className="related-post-image"
             />
             <div className="related-post-content">
-              <div className="related-post-category">Design</div>
               <h4 className="related-post-title">
                 Modern UI/UX Design Principles
               </h4>

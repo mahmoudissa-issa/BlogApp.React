@@ -21,7 +21,7 @@ export const changePasswordSchema = z.object({
     confirmNewPassword: z.string().min(6, 'Confirm password must be at least 6 characters long'),
 }).refine((data) => data.newPassword === data.confirmNewPassword, {
     message: 'New password and confirm password do not match',
-    path: ['confirmPassword'],
+    path: ['confirmNewPassword'],
 });
 
 export type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;

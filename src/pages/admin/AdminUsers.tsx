@@ -5,6 +5,8 @@ import {
   type MRT_ColumnDef,
 } from "material-react-table";
 import { FaPlus, FaEdit, FaTrash, FaTimes, FaSave, FaUpload } from "react-icons/fa";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
   fetchAllUsers,
@@ -12,11 +14,18 @@ import {
   updateUser,
   deleteUser,
 } from "../../features/users/userSlice";
-import type { User, CreateUserRequest, UpdateUserRequest } from "../../types/user";
+import type {
+  User,
+  CreateUserRequest,
+  UpdateUserRequest,
+} from "../../types/user";
+import { createUserSchema, updateUserSchema, type CreateUserFormData } from "../../types/user";
 import { SERVER_URL } from "../../constants/app";
 import { getBaseTableOptions } from "../../utils/tableConfig";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
+import PasswordToggleButton from "../../components/common/PasswordToggleButton";
+import { usePasswordToggle } from "../../hooks/usePasswordToggle";
 import "../../styles/AdminPosts.css";
 import "../../styles/AdminUsers.css";
 import { Roles } from "../../constants/enums";
@@ -40,27 +49,30 @@ const roleBadgeClass = (role: string) => {
 };
 
 /* ── Blank form state ── */
-const EMPTY_FORM = {
-  userName: "",
-  email: "",
-  fullName: "",
-  password: "",
-  roleId: 1,
-  avatar: null as File | null,
-  avatarPreview: "",
-};
 
 export default function AdminUsers() {
   const dispatch = useAppDispatch();
   const { users, loading } = useAppSelector((s) => s.users);
+  const pw = usePasswordToggle("password");
 
   const [deleting, setDeleting] = useState<number | null>(null);
 
   /* modal state */
   const [showModal, setShowModal] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
-  const [form, setForm] = useState(EMPTY_FORM);
+  const [avatar, setAvatar] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState("");
   const [saving, setSaving] = useState(false);
+
+  // Dynamic schema: createUserSchema requires password, updateUserSchema makes it optional
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<CreateUserFormData>({
+    resolver: zodResolver(editingUser ? updateUserSchema : createUserSchema) as never,
+  });
 
   useEffect(() => {
     dispatch(fetchAllUsers());
@@ -69,20 +81,22 @@ export default function AdminUsers() {
   /* ── Modal helpers ── */
   const openCreate = () => {
     setEditingUser(null);
-    setForm(EMPTY_FORM);
+    setAvatar(null);
+    setAvatarPreview("");
+    reset({ userName: "", email: "", fullName: "", password: "", roleId: 1 });
     setShowModal(true);
   };
 
   const openEdit = (user: User) => {
     setEditingUser(user);
-    setForm({
+    setAvatar(null);
+    setAvatarPreview(user.avatarUrl ? `${SERVER_URL}${user.avatarUrl}` : "");
+    reset({
       userName: user.userName,
       email: user.email,
       fullName: user.fullName ?? "",
       password: "",
       roleId: roleNameToId(user.roleName),
-      avatar: null,
-      avatarPreview: user.avatarUrl ? `${SERVER_URL}${user.avatarUrl}` : "",
     });
     setShowModal(true);
   };
@@ -90,50 +104,40 @@ export default function AdminUsers() {
   const closeModal = () => {
     setShowModal(false);
     setEditingUser(null);
-    setForm(EMPTY_FORM);
+    setAvatar(null);
+    setAvatarPreview("");
+    reset({ userName: "", email: "", fullName: "", password: "", roleId: 1 });
   };
-
-  const updateField = (field: string, value: string | number | File | null) =>
-    setForm((f) => ({ ...f, [field]: value }));
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
-    setForm((f) => ({
-      ...f,
-      avatar: file,
-      avatarPreview: file ? URL.createObjectURL(file) : f.avatarPreview,
-    }));
+    setAvatar(file);
+    if (file) setAvatarPreview(URL.createObjectURL(file));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.userName.trim()) return toast.error("Username is required");
-    if (!form.email.trim()) return toast.error("Email is required");
-    if (!editingUser && !form.password.trim())
-      return toast.error("Password is required for new users");
-
+  const onSubmit = async (data: CreateUserFormData) => {
     setSaving(true);
     try {
       if (editingUser) {
         const req: UpdateUserRequest = {
           userId: editingUser.id,
-          userName: form.userName.trim(),
-          email: form.email.trim(),
-          fullName: form.fullName.trim(),
-          roleId: form.roleId,
-          password: form.password || undefined,
-          avatar: form.avatar,
+          userName: data.userName.trim(),
+          email: data.email.trim(),
+          fullName: (data.fullName ?? "").trim(),
+          roleId: data.roleId,
+          password: data.password || undefined,
+          avatar,
         };
         await dispatch(updateUser(req)).unwrap();
         toast.success("User updated!");
       } else {
         const req: CreateUserRequest = {
-          userName: form.userName.trim(),
-          email: form.email.trim(),
-          fullName: form.fullName.trim(),
-          password: form.password,
-          roleId: form.roleId,
-          avatar: form.avatar,
+          userName: data.userName.trim(),
+          email: data.email.trim(),
+          fullName: (data.fullName ?? "").trim(),
+          password: data.password!,
+          roleId: data.roleId,
+          avatar,
         };
         await dispatch(createUser(req)).unwrap();
         toast.success("User created!");
@@ -295,12 +299,12 @@ export default function AdminUsers() {
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="user-modal-form">
+            <form onSubmit={handleSubmit(onSubmit)} className="user-modal-form" noValidate>
               {/* Avatar upload */}
               <div className="avatar-upload-area">
                 <div className="avatar-preview-wrapper">
-                  {form.avatarPreview ? (
-                    <img src={form.avatarPreview} alt="avatar" className="avatar-preview-img" />
+                  {avatarPreview ? (
+                    <img src={avatarPreview} alt="avatar" className="avatar-preview-img" />
                   ) : (
                     <div className="avatar-preview-placeholder"><FaUpload /></div>
                   )}
@@ -314,50 +318,37 @@ export default function AdminUsers() {
               <div className="user-form-grid">
                 <div className="form-field">
                   <label>Username *</label>
-                  <input
-                    type="text"
-                    value={form.userName}
-                    onChange={(e) => updateField("userName", e.target.value)}
-                    placeholder="Enter username"
-                  />
+                  <input type="text" placeholder="Enter username" {...register("userName")} />
+                  {errors.userName && <p className="text-danger mt-1">{errors.userName.message}</p>}
                 </div>
 
                 <div className="form-field">
                   <label>Email *</label>
-                  <input
-                    type="email"
-                    value={form.email}
-                    onChange={(e) => updateField("email", e.target.value)}
-                    placeholder="Enter email"
-                  />
+                  <input type="email" placeholder="Enter email" {...register("email")} />
+                  {errors.email && <p className="text-danger mt-1">{errors.email.message}</p>}
                 </div>
 
                 <div className="form-field">
                   <label>Full Name</label>
-                  <input
-                    type="text"
-                    value={form.fullName}
-                    onChange={(e) => updateField("fullName", e.target.value)}
-                    placeholder="Enter full name"
-                  />
+                  <input type="text" placeholder="Enter full name" {...register("fullName")} />
                 </div>
 
                 <div className="form-field">
                   <label>{editingUser ? "Password" : "Password *"}</label>
-                  <input
-                    type="password"
-                    value={form.password}
-                    onChange={(e) => updateField("password", e.target.value)}
-                    placeholder={editingUser ? "Leave blank to keep current" : "Enter password"}
-                  />
+                  <div className="position-relative">
+                    <input
+                      type={pw.password.show ? "text" : "password"}
+                      placeholder={editingUser ? "Leave blank to keep current" : "Enter password"}
+                      {...register("password")}
+                    />
+                    <PasswordToggleButton showPassword={pw.password.show} onToggle={pw.password.toggle} />
+                  </div>
+                  {errors.password && <p className="text-danger mt-1">{errors.password.message}</p>}
                 </div>
 
                 <div className="form-field">
                   <label>Role</label>
-                  <select
-                    value={form.roleId}
-                    onChange={(e) => updateField("roleId", Number(e.target.value))}
-                  >
+                  <select {...register("roleId")}>
                     {ROLE_OPTIONS.map((r) => (
                       <option key={r.id} value={r.id}>{r.name}</option>
                     ))}

@@ -1,4 +1,4 @@
-import  { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { fetchPosts } from "../features/posts/postSlice";
 import { fetchTags } from "../features/tags/tagSlice";
@@ -8,16 +8,20 @@ import PostCardSkeleton from "../components/skeletons/PostCardSkeleton";
 import EmptyState from "../components/common/EmptyState";
 import ErrorAlert from "../components/common/ErrorAlert";
 import TagsSkeleton from "../components/skeletons/TagsSkeleton";
+import Pagination from "../components/common/Pagination";
 import { formatPostDate } from "../utils/dateFormatter";
 import defaultAvatar from "../assets/avatar.png";
 import DomPurify from "dompurify";
 import { FaSearch } from "react-icons/fa";
+
 function Home() {
   const dispatch = useAppDispatch();
   const {
     items: posts,
     loading,
     error,
+    totalRows,
+    pageSize,
   } = useAppSelector((state) => state.post);
 
   const {
@@ -27,32 +31,55 @@ function Home() {
 
   const [activeTag, setActiveTag] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [page, setPage] = useState(0); // 0-indexed
 
+  // Resolve tagId from active tag name for server-side filtering
+  const activeTagId = useMemo(() => {
+    if (activeTag === "All") return undefined;
+    return tags.find((t) => t.name === activeTag)?.tagId;
+  }, [activeTag, tags]);
+
+  // Fetch posts whenever page or active tag changes
   useEffect(() => {
-    dispatch(fetchPosts());
+    dispatch(fetchPosts({ pageNumber: page, pageSize, tagId: activeTagId }));
+  }, [dispatch, page, activeTagId, pageSize]);
+
+  // Fetch tags once
+  useEffect(() => {
     dispatch(fetchTags());
   }, [dispatch]);
 
-  // Memoize filtered and sanitized posts to avoid re-computing on every render
+  // Client-side search applied to the current page's results
   const sanitizedPosts = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
 
     const filtered = posts.filter((post) => {
-      const matchesTag = activeTag === "All" || post.tagNames.some((tag) => tag === activeTag);
-      const matchesSearch = !query
-        || post.title.toLowerCase().includes(query)
-        || post.authorName.toLowerCase().includes(query)
-        || post.content.toLowerCase().includes(query);
-      return matchesTag && matchesSearch;
+      const matchesSearch =
+        !query ||
+        post.title.toLowerCase().includes(query) ||
+        post.authorName.toLowerCase().includes(query) ||
+        post.content.toLowerCase().includes(query);
+      return matchesSearch;
     });
 
     return filtered.map((post) => ({
       ...post,
       content: DomPurify.sanitize(post.content),
     }));
-  }, [posts, activeTag, searchQuery]);
-    
- 
+  }, [posts, searchQuery]);
+
+  const totalPages = Math.ceil(totalRows / pageSize);
+
+  const handleTagChange = (tag: string) => {
+    setActiveTag(tag);
+    setPage(0);
+    setSearchQuery("");
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <div className="posts-container">
@@ -73,40 +100,36 @@ function Home() {
         </div>
       </div>
 
-      {/* Error Alert - Only show if there's an error */}
+      {/* Error Alert */}
       {error && (
         <ErrorAlert
           message={error}
           onRetry={() => {
-            dispatch(fetchPosts());
+            dispatch(fetchPosts({ pageNumber: page, pageSize, tagId: activeTagId }));
             dispatch(fetchTags());
           }}
         />
       )}
-      {/* Tags Container - Hide when there's an error */}
+
+      {/* Tags Container */}
       {!error && (
         <div className="tags-container">
           {tagsLoading ? (
-            // Skeleton loading for tags
             <TagsSkeleton count={8} />
           ) : (
             <>
-              {/* "All" button */}
               <button
                 className={`tag-pill ${activeTag === "All" ? "active" : ""}`}
-                onClick={() => setActiveTag("All")}
+                onClick={() => handleTagChange("All")}
               >
                 All
               </button>
 
-              {/* Tag buttons */}
               {tags.map((tag) => (
                 <button
                   key={tag.tagId}
-                  className={`tag-pill ${
-                    activeTag === tag.name ? "active" : ""
-                  }`}
-                  onClick={() => setActiveTag(tag.name)}
+                  className={`tag-pill ${activeTag === tag.name ? "active" : ""}`}
+                  onClick={() => handleTagChange(tag.name)}
                 >
                   {tag.name}
                 </button>
@@ -116,105 +139,110 @@ function Home() {
         </div>
       )}
 
-      {/* Posts Grid - Hide when there's an error */}
+      {/* Posts Grid */}
       {!error && (
-        <div className="posts-grid">
-          {loading ? (
-            // Skeleton loading for posts
-            <>
-              <PostCardSkeleton />
-              <PostCardSkeleton />
-              <PostCardSkeleton />
-              <PostCardSkeleton />
-              <PostCardSkeleton />
-              <PostCardSkeleton />
-            </>
-          ) : sanitizedPosts.length === 0 ? (
-            // Empty state
-            <div className="posts-grid-empty">
-              <EmptyState
-                title="No posts found"
-                message={
-                  activeTag === "All"
-                    ? "No posts available yet. Check back later!"
-                    : `No posts found for "${activeTag}"`
-                }
-                actionButton={
-                  activeTag !== "All"
-                    ? {
-                        label: "View All Posts",
-                        onClick: () => setActiveTag("All"),
-                      }
-                    : undefined
-                }
-              />
-            </div>
-          ) : (
-            // Posts list
-            sanitizedPosts.map((post) => (
-              <Link
-                to={`/posts/${post.id}`}
-                key={post.id}
-                className="post-card-link"
-              >
-                <div className="post-card">
-                  {/* Post Image */}
-                  <div className="post-image-container">
-                    <img
-                      src={`${SERVER_URL}/${post.imageUrl}`}
-                      alt={post.title}
-                      className="post-image"
-                      loading="lazy"
-                      decoding="async"
-                      onError={(e) => {
-                        // Fallback image if loading fails
-                         e.currentTarget.src = defaultAvatar;
-                      }}
-                    />
-                  </div>
-
-                  {/* Post Content */}
-                  <div className="post-content">
-                    {/* Category Badge */}
-                    {post.categoryName && (
-                      <span className="post-category">{post.categoryName}</span>
-                    )}
-
-                    {/* Post Title */}
-                    <h3 className="post-title">{post.title}</h3>
-
-                    {/* Post Excerpt */}
-                    <p className="post-excerpt" dangerouslySetInnerHTML={{__html:post.content.substring(0,120) +"..."}} />
-                  
-                    
-                  </div>
-
-                  {/* Author & Date */}
-                  <div className="post-meta">
-                    <div className="author-info">
+        <>
+          <div className="posts-grid">
+            {loading ? (
+              <>
+                <PostCardSkeleton />
+                <PostCardSkeleton />
+                <PostCardSkeleton />
+                <PostCardSkeleton />
+                <PostCardSkeleton />
+                <PostCardSkeleton />
+                <PostCardSkeleton />
+                <PostCardSkeleton />
+                <PostCardSkeleton />
+              </>
+            ) : sanitizedPosts.length === 0 ? (
+              <div className="posts-grid-empty">
+                <EmptyState
+                  title="No posts found"
+                  message={
+                    activeTag === "All"
+                      ? "No posts available yet. Check back later!"
+                      : `No posts found for "${activeTag}"`
+                  }
+                  actionButton={
+                    activeTag !== "All"
+                      ? {
+                          label: "View All Posts",
+                          onClick: () => handleTagChange("All"),
+                        }
+                      : undefined
+                  }
+                />
+              </div>
+            ) : (
+              sanitizedPosts.map((post) => (
+                <Link
+                  to={`/posts/${post.id}`}
+                  key={post.id}
+                  className="post-card-link"
+                >
+                  <div className="post-card">
+                    {/* Post Image */}
+                    <div className="post-image-container">
                       <img
-                        src={defaultAvatar}
-                        alt={post.authorName}
-                        className="author-avatar"
+                        src={`${SERVER_URL}/${post.imageUrl}`}
+                        alt={post.title}
+                        className="post-image"
                         loading="lazy"
                         decoding="async"
                         onError={(e) => {
-                           e.currentTarget.src = defaultAvatar;
+                          e.currentTarget.src = defaultAvatar;
                         }}
                       />
-                      <div className="author-details">
-                        <p className="author-name">{post.authorName}</p>
-                        <p className="post-date">
-                          {formatPostDate(post.createdAt)}
-                        </p>
+                    </div>
+
+                    {/* Post Content */}
+                    <div className="post-content">
+                      <h3 className="post-title">{post.title}</h3>
+                      <p
+                        className="post-excerpt"
+                        dangerouslySetInnerHTML={{
+                          __html: post.content.substring(0, 120) + "...",
+                        }}
+                      />
+                    </div>
+
+                    {/* Author & Date */}
+                    <div className="post-meta">
+                      <div className="author-info">
+                        <img
+                          src={defaultAvatar}
+                          alt={post.authorName}
+                          className="author-avatar"
+                          loading="lazy"
+                          decoding="async"
+                          onError={(e) => {
+                            e.currentTarget.src = defaultAvatar;
+                          }}
+                        />
+                        <div className="author-details">
+                          <p className="author-name">{post.authorName}</p>
+                          <p className="post-date">{formatPostDate(post.createdAt)}</p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            ))
+                </Link>
+              ))
+            )}
+          </div>
+
+          {/* Pagination */}
+          {!loading && totalPages > 1 && (
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              pageSize={pageSize}
+              totalRows={totalRows}
+            />
           )}
-        </div>
+        </>
       )}
     </div>
   );

@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
   createPost,
@@ -15,12 +17,11 @@ import { FaCloudUploadAlt, FaTimes, FaArrowLeft } from "react-icons/fa";
 import { SERVER_URL } from "../../constants/app";
 import { canCreateTags, getDashboardPath } from "../../core/permissions";
 import TagDropdown from "../../components/common/TagDropdown";
+import { validateImageFile } from "../../utils/imageValidation";
+import { postFormSchema, type PostFormData } from "../../types/post";
 import "../../styles/AdminPosts.css";
 
 /* ── constants ── */
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
-const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-
 const QUILL_MODULES = {
   toolbar: [
     [{ header: [1, 2, 3, 4, 5, 6, false] }],
@@ -44,18 +45,6 @@ const QUILL_FORMATS = [
 const toSlug = (text: string) =>
   text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
-const validateImage = (file: File): boolean => {
-  if (!ACCEPTED_TYPES.includes(file.type)) {
-    toast.error("Upload a valid image (JPEG, PNG, WebP, GIF)");
-    return false;
-  }
-  if (file.size > MAX_IMAGE_SIZE) {
-    toast.error("Image must be under 5 MB");
-    return false;
-  }
-  return true;
-};
-
 /* ── component ── */
 export default function PostForm() {
   const { id } = useParams<{ id: string }>();
@@ -69,19 +58,29 @@ export default function PostForm() {
 
   const basePath = `${getDashboardPath(user?.role)}/posts`;
 
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [categoryId, setCategoryId] = useState(1);
-  const [selectedTagNames, setSelectedTagNames] = useState<string[]>([]);
+  // RHF with Zod
+  const {
+    register,
+    handleSubmit: rhfSubmit,
+    control,
+    setValue,
+    watch,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<PostFormData>({
+    resolver: zodResolver(postFormSchema),
+    defaultValues: { title: "", content: "", tagNames: [] },
+  });
+
+  const title = watch("title");
+  const slug = useMemo(() => toSlug(title), [title]);
+
+  // Non-validated local state (image, custom tags, drag)
   const [customTags, setCustomTags] = useState<string[]>([]);
   const [postImage, setPostImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const slug = useMemo(() => toSlug(title), [title]);
 
   /* ── data loading ── */
   useEffect(() => { dispatch(fetchTags()); }, [dispatch]);
@@ -93,30 +92,32 @@ export default function PostForm() {
 
   useEffect(() => {
     if (!isEdit || !currentPost) return;
-    setTitle(currentPost.title);
-    setContent(currentPost.content);
-    setCategoryId(currentPost.categoryId);
-    setSelectedTagNames(currentPost.tagNames ?? []);
+    reset({
+      title: currentPost.title,
+      content: currentPost.content,
+      tagNames: currentPost.tagNames ?? [],
+    });
     if (currentPost.imageUrl) setImagePreview(currentPost.imageUrl);
-  }, [isEdit, currentPost]);
+  }, [isEdit, currentPost, reset]);
 
   /* ── tag helpers ── */
   const allowCustomTags = canCreateTags(user?.role);
+  const selectedTagNames = watch("tagNames");
 
-  const toggleTag = (tagName: string) =>
-    setSelectedTagNames((prev) =>
-      prev.includes(tagName) ? prev.filter((t) => t !== tagName) : [...prev, tagName],
-    );
+  const toggleTag = (tagName: string) => {
+    const current = selectedTagNames;
+    const next = current.includes(tagName)
+      ? current.filter((t) => t !== tagName)
+      : [...current, tagName];
+    setValue("tagNames", next, { shouldValidate: true });
+  };
 
-  const addCustomTag = (name: string) =>
-    setCustomTags((prev) => [...prev, name]);
-
-  const removeCustomTag = (name: string) =>
-    setCustomTags((prev) => prev.filter((t) => t !== name));
+  const addCustomTag = (name: string) => setCustomTags((prev) => [...prev, name]);
+  const removeCustomTag = (name: string) => setCustomTags((prev) => prev.filter((t) => t !== name));
 
   /* ── image handlers ── */
   const pickImage = (file: File) => {
-    if (!validateImage(file)) return;
+    if (!validateImageFile(file)) return;
     setPostImage(file);
     setImagePreview(URL.createObjectURL(file));
   };
@@ -148,23 +149,15 @@ export default function PostForm() {
   };
 
   /* ── submit ── */
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title.trim()) return toast.error("Title is required");
-    if (!content.trim() || content === "<p><br></p>")
-      return toast.error("Content is required");
-    if (!selectedTagNames.length && !customTags.length)
-      return toast.error("Select at least one tag");
-
-    setSubmitting(true);
-
-    const allTagNames = [...selectedTagNames, ...customTags];
+  const onSubmit = async (data: PostFormData) => {
+    // Merge custom tags with selected tags
+    const allTagNames = [...data.tagNames, ...customTags];
+    if (!allTagNames.length) { toast.error("Select at least one tag"); return; }
 
     const payload = {
-      title,
-      content,
+      title: data.title,
+      content: data.content,
       authorId: isEdit ? (currentPost?.authorId ?? Number(user?.id)) : Number(user?.id),
-      categoryId,
       tagNames: allTagNames,
       postImage,
     };
@@ -180,18 +173,13 @@ export default function PostForm() {
       navigate(basePath);
     } catch (err) {
       toast.error((err as string) || `Failed to ${isEdit ? "update" : "create"} post`);
-    } finally {
-      setSubmitting(false);
     }
   };
 
   /* ── image src helper ── */
-  const imageSrc =
-    postImage && imagePreview
-      ? imagePreview
-      : imagePreview
-        ? `${SERVER_URL}${imagePreview}`
-        : null;
+  const imageSrc = postImage && imagePreview
+    ? imagePreview
+    : imagePreview ? `${SERVER_URL}${imagePreview}` : null;
 
   /* ── render ── */
   return (
@@ -207,17 +195,12 @@ export default function PostForm() {
       </div>
 
       <div className="post-form-card">
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={rhfSubmit(onSubmit)} noValidate>
           {/* Title */}
           <div className="form-group">
             <label htmlFor="post-title">Title</label>
-            <input
-              id="post-title"
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter post title…"
-            />
+            <input id="post-title" type="text" placeholder="Enter post title…" {...register("title")} />
+            {errors.title && <p className="text-danger mt-1">{errors.title.message}</p>}
           </div>
 
           {/* Slug (auto-generated, read-only) */}
@@ -230,15 +213,25 @@ export default function PostForm() {
           <div className="form-group">
             <label>Content</label>
             <div className="quill-wrapper">
-              <ReactQuill
-                theme="snow"
-                value={content}
-                onChange={setContent}
-                modules={QUILL_MODULES}
-                formats={QUILL_FORMATS}
-                placeholder="Write your post content here…"
+              <Controller
+                name="content"
+                control={control}
+                render={({ field }) => (
+                  <ReactQuill
+                    theme="snow"
+                    value={field.value}
+                    onChange={(val) => {
+                      const isEmpty = !val || val === "<p><br></p>";
+                      field.onChange(isEmpty ? "" : val);
+                    }}
+                    modules={QUILL_MODULES}
+                    formats={QUILL_FORMATS}
+                    placeholder="Write your post content here…"
+                  />
+                )}
               />
             </div>
+            {errors.content && <p className="text-danger mt-1">{errors.content.message}</p>}
           </div>
 
           {/* Tags */}
@@ -253,18 +246,7 @@ export default function PostForm() {
               onRemoveCustomTag={removeCustomTag}
               allowCustomTags={allowCustomTags}
             />
-          </div>
-
-          {/* Category */}
-          <div className="form-group">
-            <label htmlFor="post-category">Category ID</label>
-            <input
-              id="post-category"
-              type="number"
-              min={1}
-              value={categoryId}
-              onChange={(e) => setCategoryId(Number(e.target.value))}
-            />
+            {errors.tagNames && <p className="text-danger mt-1">{errors.tagNames.message}</p>}
           </div>
 
           {/* Image Upload */}
@@ -303,8 +285,8 @@ export default function PostForm() {
 
           {/* Actions */}
           <div className="form-actions">
-            <button type="submit" className="btn-submit" disabled={submitting || loading}>
-              {submitting ? (isEdit ? "Updating…" : "Creating…") : isEdit ? "Update Post" : "Create Post"}
+            <button type="submit" className="btn-submit" disabled={isSubmitting || loading}>
+              {isSubmitting ? (isEdit ? "Updating…" : "Creating…") : isEdit ? "Update Post" : "Create Post"}
             </button>
             <Link to={basePath} className="btn-cancel">Cancel</Link>
           </div>
