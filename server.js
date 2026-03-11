@@ -6,12 +6,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname  = dirname(__filename);
 
 const app  = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 app.use(express.static(join(__dirname, 'dist')));
 
 // Express 5 requires (req, res, next) or use a wildcard pattern
-app.get('/{*splat}', (req, res) => {
+app.get('/{*splat}', (_req, res) => {
   res.sendFile(join(__dirname, 'dist', 'index.html'));
 });
 
