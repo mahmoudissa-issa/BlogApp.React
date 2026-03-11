@@ -232,7 +232,7 @@ function Home() {
             )}
           </div>
 
-          {/* Pagination 12 */}
+          {/* Pagination  */}
           {!loading && totalPages > 1 && (
             <Pagination
               currentPage={page}
