@@ -1,3 +1,5 @@
+//Azure App Service Entry Point 
+
 import express from 'express';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
