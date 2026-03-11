@@ -1,4 +1,4 @@
-//Azure App Service Entry Point 1
+//Azure App Service Entry Point 
 
 import express from 'express';
 import { fileURLToPath } from 'url';
