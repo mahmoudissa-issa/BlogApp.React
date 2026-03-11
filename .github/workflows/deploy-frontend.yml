@@ -3,9 +3,7 @@ name: Deploy React Frontend to Azure App Service
 on:
   push:
     branches: [ master ]
-    paths:
-      - 'BlogApp.React/**'
-      - '.github/workflows/deploy-frontend.yml'
+
 
 jobs:
   build-and-deploy:
