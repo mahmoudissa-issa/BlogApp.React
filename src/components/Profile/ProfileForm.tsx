@@ -10,9 +10,7 @@ import { updateAvatar } from '../../features/auth/authSlice';
 import { profileSchema, type ProfileFormData } from '../../types/profile';
 import { FaCamera, FaUser } from 'react-icons/fa';
 import { SERVER_URL } from '../../constants/app';
-
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+import { validateImageFile } from '../../utils/imageValidation';
 
 function ProfileForm() {
   const dispatch = useAppDispatch();
@@ -56,20 +54,8 @@ function ProfileForm() {
     }
   }, [profileInfo, reset]);
 
-  const validateFile = (file: File): boolean => {
-    if (!ACCEPTED_TYPES.includes(file.type)) {
-      toast.error('Please upload a valid image (JPEG, PNG, WebP, or GIF)');
-      return false;
-    }
-    if (file.size > MAX_FILE_SIZE) {
-      toast.error('Image must be smaller than 5MB');
-      return false;
-    }
-    return true;
-  };
-
   const handleAvatarUpload = async (file: File) => {
-    if (!validateFile(file)) return;
+    if (!validateImageFile(file)) return;
 
     // Show local preview immediately
     const localPreview = URL.createObjectURL(file);
@@ -79,11 +65,9 @@ function ProfileForm() {
       const newAvatarUrl = await dispatch(UploadAvatar(file)).unwrap();
       dispatch(updateAvatar(newAvatarUrl)); // Update auth state
       toast.success('Profile picture updated!');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      // Revert preview on failure
+    } catch (error: unknown) {
       setPreviewUrl(profileInfo?.avatarUrl || null);
-      toast.error(error || 'Failed to upload profile picture');
+      toast.error((error as string) || 'Failed to upload profile picture');
     } finally {
       URL.revokeObjectURL(localPreview);
     }
@@ -122,9 +106,8 @@ function ProfileForm() {
     try {
       await dispatch(UpdateProfile({ fullName: data.fullName })).unwrap();
       toast.success('Profile updated successfully!');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      toast.error(error || 'Failed to update profile');
+    } catch (error: unknown) {
+      toast.error((error as string) || 'Failed to update profile');
     }
   };
 

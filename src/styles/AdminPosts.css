@@ -1,0 +1,384 @@
+/* ==================== SHARED ADMIN PAGE ==================== */
+
+.admin-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.admin-page-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.admin-page-header p {
+  color: #64748b;
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+}
+
+/* ==================== PRIMARY ACTION BUTTON ==================== */
+
+.btn-primary-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1.2rem;
+  background: linear-gradient(135deg, #39bdf9, #667eea);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: box-shadow 0.2s, transform 0.2s;
+  box-shadow: 0 2px 8px rgba(57, 189, 249, 0.25);
+}
+
+.btn-primary-action:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(57, 189, 249, 0.35);
+  color: #fff;
+}
+
+/* ==================== TABLE ACTION BUTTONS ==================== */
+
+.table-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.btn-action {
+  padding: 0.3rem 0.7rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: opacity 0.15s;
+}
+
+.btn-action:hover { opacity: 0.88; }
+
+.btn-action.edit   { background: #39bdf9; color: #fff; }
+.btn-action.delete { background: #ef4444; color: #fff; }
+.btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ==================== TAG CHIPS (table + form) ==================== */
+
+.tag-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  background: #e0f2fe;
+  color: #0369a1;
+  border-radius: 12px;
+  font-size: 0.74rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ==================== AUTHOR CELL ==================== */
+
+.author-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.author-avatar-small {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e2e8f0;
+}
+
+.author-avatar-placeholder {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f97316, #ef4444);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.68rem;
+  flex-shrink: 0;
+}
+
+/* ==================== COMMENT CELLS ==================== */
+
+.inline-edit-textarea {
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border: 2px solid #667eea;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+  background: #f8fafc;
+}
+
+.inline-edit-textarea:focus {
+  border-color: #39bdf9;
+  background: #fff;
+}
+
+.comment-content-cell {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: #334155;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+/* ==================== POST IMAGE THUMBNAIL ==================== */
+
+.post-image-thumb {
+  width: 48px;
+  height: 34px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+.post-image-none {
+  color: #cbd5e1;
+  font-size: 0.8rem;
+}
+
+/* ==================== POST FORM (full width) ==================== */
+
+.post-form-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1.75rem 2rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.form-group {
+  margin-bottom: 1.15rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: #374151;
+  margin-bottom: 0.35rem;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.55rem 0.8rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  background: #fff;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #39bdf9;
+  box-shadow: 0 0 0 3px rgba(57, 189, 249, 0.1);
+}
+
+.form-group input[readonly] {
+  background: #f8fafc;
+  color: #64748b;
+  cursor: default;
+}
+
+.error-text {
+  color: #ef4444;
+  font-size: 0.78rem;
+  margin-top: 0.2rem;
+}
+
+/* ==================== IMAGE UPLOAD ==================== */
+
+.image-upload-area {
+  border: 2px dashed #cbd5e1;
+  border-radius: 10px;
+  padding: 1.25rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #fafbfc;
+}
+
+.image-upload-area:hover,
+.image-upload-area.dragging {
+  border-color: #39bdf9;
+  background: #f0f9ff;
+}
+
+.image-upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  color: #94a3b8;
+}
+
+.image-upload-placeholder svg { font-size: 1.8rem; color: #39bdf9; }
+.image-upload-placeholder p   { margin: 0; font-size: 0.84rem; }
+.upload-hint                  { font-size: 0.72rem; color: #94a3b8; }
+
+.image-preview-container {
+  position: relative;
+  display: inline-block;
+}
+
+.image-preview {
+  max-width: 220px;
+  max-height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.image-remove-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #ef4444;
+  color: #fff;
+  border: 2px solid #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  transition: background 0.15s;
+}
+
+.image-remove-btn:hover { background: #dc2626; }
+
+/* ==================== QUILL EDITOR ==================== */
+
+.quill-wrapper .ql-toolbar {
+  border-radius: 8px 8px 0 0;
+  border-color: #d1d5db;
+  background: #f8fafc;
+}
+
+.quill-wrapper .ql-container {
+  border-radius: 0 0 8px 8px;
+  border-color: #d1d5db;
+  min-height: 280px;
+  font-size: 0.95rem;
+}
+
+.quill-wrapper .ql-editor { min-height: 280px; }
+
+/* ==================== FORM BUTTONS ==================== */
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.btn-submit {
+  padding: 0.55rem 1.6rem;
+  background: linear-gradient(135deg, #39bdf9, #667eea);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+  box-shadow: 0 2px 8px rgba(57, 189, 249, 0.25);
+}
+
+.btn-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(57, 189, 249, 0.35);
+}
+
+.btn-submit:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.btn-cancel {
+  padding: 0.55rem 1.6rem;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: background 0.15s;
+}
+
+.btn-cancel:hover { background: #e2e8f0; color: #1e293b; }
+
+/* ==================== INLINE CREATE BAR ==================== */
+
+.inline-create-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background: #f8fbff;
+  border: 1px solid #e0e7ef;
+  border-radius: 10px;
+}
+
+.inline-create-input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.inline-create-input:focus {
+  border-color: #39bdf9;
+  box-shadow: 0 0 0 3px rgba(57, 189, 249, 0.1);
+}
+
+/* ==================== INLINE EDIT INPUT ==================== */
+
+.inline-edit-input {
+  padding: 0.3rem 0.55rem;
+  border: 1.5px solid #39bdf9;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  outline: none;
+  width: 100%;
+  max-width: 220px;
+  box-shadow: 0 0 0 3px rgba(57, 189, 249, 0.1);
+}

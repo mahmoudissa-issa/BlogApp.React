@@ -198,7 +198,15 @@ const slice = createSlice({
       // Resend Verification
       .addCase(resendVerification.pending, setPending)
       .addCase(resendVerification.fulfilled, (state) => { state.status = "idle"; })
-      .addCase(resendVerification.rejected, setRejected);
+      .addCase(resendVerification.rejected, setRejected)
+      // Forgot Password
+      .addCase(forgotPassword.pending, setPending)
+      .addCase(forgotPassword.fulfilled, (state) => { state.status = "idle"; })
+      .addCase(forgotPassword.rejected, setRejected)
+      // Reset Password
+      .addCase(resetPassword.pending, setPending)
+      .addCase(resetPassword.fulfilled, (state) => { state.status = "idle"; })
+      .addCase(resetPassword.rejected, setRejected);
   },
 });
 

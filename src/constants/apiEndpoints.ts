@@ -19,11 +19,13 @@ export const API_ENDPOINTS = {
   POSTS: {
     GET_ALL: '/api/posts',
     GET_BY_ID: (id: number) => `/api/posts/${id}`,
+    GET_BY_USER: (userId: number) => `/api/by-user/${userId}`,
     CREATE: '/api/posts',
     UPDATE: '/api/posts',
     DELETE: (id: number) => `/api/posts/${id}`,
   },
   COMMENTS: {
+    GET_ALL: '/api/comment',
     GET_BY_POST: (postId: number) => `/api/comment/${postId}`,
     CREATE: '/api/comment',
     UPDATE: '/api/comment',
@@ -34,5 +36,12 @@ export const API_ENDPOINTS = {
     GET_PROFILE_INFO:`/api/profile`,
     UPDATE_PROFILE: `/api/update-profile`,
     UPLOAD_AVATAR: `/api/upload-avatar`
-  }
+  },
+  USERS: {
+    GET_ALL: '/api/users',
+    GET_BY_ID: (id: number) => `/api/users/${id}`,
+    CREATE: '/api/users',
+    UPDATE: '/api/users',
+    DELETE: (id: number) => `/api/users/${id}`,
+  },
 };

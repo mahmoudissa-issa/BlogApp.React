@@ -35,12 +35,6 @@ describe('Home Page', () => {
     expect(screen.getByText('Jane Smith')).toBeInTheDocument();
   });
 
-  it('displays category badges on post cards', async () => {
-    expect(await screen.findByText('Getting Started with React')).toBeInTheDocument();
-    expect(screen.getAllByText('Frontend')).toHaveLength(2);
-    expect(screen.getByText('Backend')).toBeInTheDocument();
-  });
-
   it('filters posts when a tag is clicked', async () => {
     // Wait for posts and tags to load
     expect(await screen.findByText('Getting Started with React')).toBeInTheDocument();

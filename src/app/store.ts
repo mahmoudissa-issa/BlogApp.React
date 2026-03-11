@@ -4,6 +4,8 @@ import postReducer from "../features/posts/postSlice";
 import tagReducer from "../features/tags/tagSlice";
 import postDetailReducer from "../features/postDetails/postDetailSlice";
 import profileReducer from "../features/profile/profileSlice";
+import commentReducer from "../features/comments/commentSlice";
+import userReducer from "../features/users/userSlice";
 export const store = configureStore({
   reducer: {
     auth:authReducer,
@@ -11,6 +13,8 @@ export const store = configureStore({
     tags:tagReducer,
     postDetail:postDetailReducer,
     profile:profileReducer,
+    comments:commentReducer,
+    users:userReducer,
   },
 });
 

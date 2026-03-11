@@ -27,7 +27,7 @@ export const fetchPostDetail = createAsyncThunk(
   "postDetail/fetchPostDetail",
   async (postId: number, thunkAPI) => {
     try {
-      const postDetail = postApi.getById(postId);
+      const postDetail = await postApi.getById(postId);
       return postDetail;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {

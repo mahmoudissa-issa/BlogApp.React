@@ -1,7 +1,10 @@
-export const UserRole = {
+export const Roles = {
   ADMIN: 'Admin',
-  USER: 'User',
-  MODERATOR: 'Moderator'
+  AUTHOR: 'Author',
+  READER: 'Reader',
 } as const;
 
-export type UserRole = typeof UserRole[keyof typeof UserRole];
+export type Roles = (typeof Roles)[keyof typeof Roles];
+
+/** Roles that can access a dashboard (Admin or Author) */
+export const DASHBOARD_ROLES: Roles[] = [Roles.ADMIN, Roles.AUTHOR];

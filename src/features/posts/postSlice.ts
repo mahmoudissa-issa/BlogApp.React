@@ -8,15 +8,37 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { postApi } from "../../api/postsApi";
 import type { CreatePostRequest, Post, UpdatePostRequest } from "../../types/post";
 
-export const fetchPosts=createAsyncThunk("posts/fetchAll",async(_, thunkAPI)=>{
-    try{
-        const posts=await postApi.getAll();
-        return posts;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    }catch(err:any){
-        return thunkAPI.rejectWithValue(err.message || 'Failed to fetch posts');
+export interface FetchPostsParams {
+    pageNumber?: number;
+    pageSize?: number;
+    tagId?: number;
+}
+
+export const fetchPosts = createAsyncThunk(
+    "posts/fetchAll",
+    async (params: FetchPostsParams = {}, thunkAPI) => {
+        try {
+            const { pageNumber = 0, pageSize = 9, tagId } = params;
+            const data = await postApi.getAll(pageNumber, pageSize, tagId);
+            return { ...data, pageNumber, pageSize };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (err: any) {
+            return thunkAPI.rejectWithValue(err.message || 'Failed to fetch posts');
+        }
     }
-});
+);
+
+export const fetchPostsByUser = createAsyncThunk(
+    "posts/fetchByUser",
+    async (userId: number, thunkAPI) => {
+        try {
+            return await postApi.getByUser(userId);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (err: any) {
+            return thunkAPI.rejectWithValue(err.message || 'Failed to fetch user posts');
+        }
+    }
+);
 
 export const fetchPostById=createAsyncThunk("posts/fetchById",async(id:number,thunkAPI) =>{
     try{
@@ -70,13 +92,18 @@ interface PostState {
     currentPost?:Post;
     loading:boolean;
     error?:string |null;
-
+    totalRows: number;
+    pageNumber: number;
+    pageSize: number;
 }
 
 const initalState:PostState={
     items:[],
     loading:false,
-    error:null
+    error:null,
+    totalRows: 0,
+    pageNumber: 0,
+    pageSize: 9,
 }
 
 const postSlice=createSlice({
@@ -95,9 +122,26 @@ const postSlice=createSlice({
         });
         builder.addCase(fetchPosts.fulfilled,(state, action) =>{
             state.loading=false;
-            state.items=action.payload;
+            state.items=action.payload.items;
+            state.totalRows=action.payload.totalRows;
+            state.pageNumber=action.payload.pageNumber;
+            state.pageSize=action.payload.pageSize;
         });
         builder.addCase(fetchPosts.rejected,(state,action)=>{
+            state.loading=false;
+            state.error=action.payload as string;
+        });
+
+        // Fetch posts by user
+        builder.addCase(fetchPostsByUser.pending,(state) =>{
+            state.loading=true;
+            state.error=null;
+        });
+        builder.addCase(fetchPostsByUser.fulfilled,(state, action) =>{
+            state.loading=false;
+            state.items=action.payload;
+        });
+        builder.addCase(fetchPostsByUser.rejected,(state,action)=>{
             state.loading=false;
             state.error=action.payload as string;
         });

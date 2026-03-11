@@ -8,6 +8,7 @@ import { FaChartLine, FaCog, FaSignOutAlt, FaChevronDown } from "react-icons/fa"
 import "../styles/Navbar.css"
 import { SERVER_URL } from "../constants/app";
 import { useState } from "react";
+import { canManagePosts, getDashboardPath } from "../core/permissions";
 
 interface UserAvatarProps {
   username: string;
@@ -100,11 +101,11 @@ export default function NavBar() {
                   </Dropdown.Toggle>
 
                   <Dropdown.Menu className="user-dropdown-menu">
-                    {(user.role === "Admin" || user.role === "Author") && (
+                    {canManagePosts(user.role) && (
                       <>
                         <Dropdown.Item 
                           as={Link} 
-                          to="/admin"
+                          to={getDashboardPath(user.role)}
                           className="dropdown-item-custom"
                         >
                           <FaChartLine className="dropdown-icon" />
@@ -136,9 +137,9 @@ export default function NavBar() {
 
                 {/* Mobile Menu Items */}
                 <div className="d-lg-none w-100">
-                  {(user.role === "Admin" || user.role === "Author") && (
+                  {canManagePosts(user.role) && (
                     <Link 
-                      to="/admin" 
+                      to={getDashboardPath(user.role)} 
                       className="nav-link mobile-menu-item"
                     >
                       <FaChartLine className="dropdown-icon" />
