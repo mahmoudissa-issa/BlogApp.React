@@ -1,0 +1,39 @@
+name: Deploy Frontend to AKS
+
+on:
+  push:
+    branches: [ master ]
+    
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Login to ACR
+        run: az acr login --name blogapprmimoegistry
+
+      - name: Build and Push Docker Image
+        run: |
+          docker build \
+            --build-arg VITE_API_BASE_URL=http://20.101.248.89 \
+            -t blogapprmimoegistry.azurecr.io/blogapp-frontend:${{ github.sha }} \
+            -t blogapprmimoegistry.azurecr.io/blogapp-frontend:latest \
+            .
+          docker push blogapprmimoegistry.azurecr.io/blogapp-frontend:${{ github.sha }}
+          docker push blogapprmimoegistry.azurecr.io/blogapp-frontend:latest
+
+      - name: Get AKS Credentials
+        run: az aks get-credentials --resource-group BlogApp-RG --name BlogApp-AKS --overwrite-existing
+
+      - name: Deploy to AKS
+        run: |
+          kubectl apply -f k8s/frontend-deployment.yaml
+          kubectl rollout restart deployment/blogapp-frontend
+          kubectl rollout status deployment/blogapp-frontend --timeout=300s
