@@ -73,7 +73,7 @@ export default function NavBar() {
 
         <Navbar.Collapse id="main-navbar">
           <Nav className="ms-auto align-items-center gap-3">
-            {/* {!user && (
+            {!user && (
               <>
                 <Link to="/login" className="nav-btn nav-btn-outline">
                   Sign In
@@ -82,7 +82,7 @@ export default function NavBar() {
                   Register
                 </Link>
               </>
-            )} */}
+            )}
 
             {user && (
               <>
