@@ -1,0 +1,33 @@
+# PART 1: Deployment 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blogapp-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: blogapp-frontend
+  template:
+    metadata:
+      labels:
+        app: blogapp-frontend
+    spec:
+      containers:
+        - name: blogapp-frontend
+          image: blogapprmimoegistry.azurecr.io/blogapp-frontend:latest
+          ports:
+            - containerPort: 80
+---
+# PART 2: Service — exposes frontend with a public IP
+apiVersion: v1
+kind: Service
+metadata:
+  name: blogapp-frontend-service
+spec:
+  selector:
+    app: blogapp-frontend
+  ports:
+    - port: 80
+      targetPort: 80
+  type: LoadBalancer   # gives you a real public IP address
